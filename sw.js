@@ -1,4 +1,4 @@
-const CACHE_NAME = "angel-companion-33d-v2";
+const CACHE_NAME = "angel-companion-33d-v3";
 const CORE_ASSETS = [
   "./",
   "./index.html",
