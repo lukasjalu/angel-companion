@@ -4,7 +4,7 @@
       "target": {
         "namespace": "android_app",
         "package_name": "io.github.lukasjalu.twa",
-        "sha256_cert_fingerprints": ["88:91:2E:F7:84:80:E0:D3:FF:0C:71:92:0D:EA:2F:7C:EB:62:8B:7B:21:A8:0C:1D:4B:41:F0:E7:4C:41:F5:DB"]
+        "sha256_cert_fingerprints": ["F7:0C:2C:17:B6:B9:96:11:6E:3D:62:20:D4:7C:B4:DD:E9:75:B8:81:80:CD:0F:2E:39:1F:54:53:DA:65:D6:FB"]
       }
     }
 ]
