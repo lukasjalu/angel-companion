@@ -1,10 +1,10 @@
-const CACHE_NAME = "angel-companion-33d-v1";
+const CACHE_NAME = "angel-companion-33d-v2";
 const CORE_ASSETS = [
   "./",
   "./index.html",
   "./manifest.json",
-  "./icon-192.png",
-  "./icon-512.png"
+  "./icon_192.png",
+  "./icon_512.png"
 ];
 
 self.addEventListener("install", (event) => {
