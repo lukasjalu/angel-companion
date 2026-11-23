@@ -4,7 +4,7 @@
   "description": "Jurnal doa, bacaan firman, dan refleksi perbuatan baik selama 33 hari menjadi anak-anak Terang.",
   "start_url": "./index.html",
   "scope": "./",
-  "display": "standalone",
+  "display": "fullscreen",
   "orientation": "portrait",
   "background_color": "#f6e7c1",
   "theme_color": "#8c6239",
