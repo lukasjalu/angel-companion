@@ -1,12 +1,8 @@
-[
-  {
-    "relation": ["delegate_permission/common.handle_all_urls"],
-    "target": {
-      "namespace": "android_app",
-      "package_name": "com.lukasjalu.angelcompanion",
-      "sha256_cert_fingerprints": [
-        "AA:BB:CC:..."
-      ]
-    }
-  }
-]
+[{
+      "relation": ["delegate_permission/common.handle_all_urls"],
+      "target": {
+        "namespace": "android_app",
+        "package_name": "io.github.lukasjalu.twa",
+        "sha256_cert_fingerprints": ["88:91:2E:F7:84:80:E0:D3:FF:0C:71:92:0D:EA:2F:7C:EB:62:8B:7B:21:A8:0C:1D:4B:41:F0:E7:4C:41:F5:DB"]
+      }
+    }]
