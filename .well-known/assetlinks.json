@@ -3,9 +3,9 @@
     "relation": ["delegate_permission/common.handle_all_urls"],
     "target": {
       "namespace": "android_app",
-      "package_name": "io.github.lukasjalu.twa",
+      "package_name": "com.lukasjalu.angelcompanion",
       "sha256_cert_fingerprints": [
-        "F7:0C:2C:17:B6:B9:96:11:6E:3D:62:20:D4:7C:B4:DD:E9:75:B8:81:80:CD:0F:2E:39:1F:54:53:DA:65:D6:FB"
+        "82:49:D6:89:C9:64:54:FC:73:E9:11:B4:C9:F4:D6:68:53:AD:EF:F0:13:91:CE:03:15:05:5F:C8:96:70:24:9F"
       ]
     }
   }
