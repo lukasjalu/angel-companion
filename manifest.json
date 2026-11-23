@@ -1,0 +1,25 @@
+{
+  "name": "Angel Companion — 33 Days Journey",
+  "short_name": "Angel Companion",
+  "description": "Jurnal doa, bacaan firman, dan refleksi perbuatan baik selama 33 hari menjadi anak-anak Terang.",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#f6e7c1",
+  "theme_color": "#8c6239",
+  "icons": [
+    {
+      "src": "./icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "./icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}

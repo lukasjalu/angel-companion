@@ -1,0 +1,2532 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Angel Companion — 33 Days Journey</title>
+  <link rel="manifest" href="./manifest.json" />
+  <meta name="theme-color" content="#8c6239" />
+  <link rel="apple-touch-icon" href="./icon-192.png" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --shell-bg: #f6e7c1;
+      --shell-border: #8c6239;
+      --shell-shadow: #c9a96e;
+      --lcd-day-top: #cfe8ff;
+      --lcd-day-bot: #fff6d6;
+      --lcd-night-top: #1e293b;
+      --lcd-night-bot: #334155;
+      --lcd-shadow-top: #181e2c;
+      --lcd-shadow-bot: #0b0e17;
+      --lcd-heaven-top: #fff29c;
+      --lcd-heaven-bot: #cff0ff;
+      --ink: #2b2118;
+      --px-font: "Press Start 2P", "Courier New", Courier, monospace;
+    }
+
+    * {
+      box-sizing: border-box;
+      user-select: none;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background: radial-gradient(circle at top, #dbeafe 0%, #bfdbfe 50%, #93c5fd 100%);
+      font-family: var(--px-font);
+      color: var(--ink);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 16px;
+    }
+
+    .pocket-shell {
+      position: relative;
+      width: 100%;
+      max-width: 432px;
+      background: var(--shell-bg);
+      border: 4px solid var(--shell-border);
+      border-radius: 36px 36px 44px 44px;
+      padding: 18px 18px 20px;
+      box-shadow:
+        inset -6px -8px 0 var(--shell-shadow),
+        inset 4px 4px 0 #fff8e7,
+        0 14px 0 #6e4b2a,
+        0 22px 34px rgba(0, 0, 0, 0.25);
+    }
+
+    .top-brand {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 10px;
+      padding: 0 4px;
+      gap: 6px;
+    }
+
+    .brand-block {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      min-width: 0;
+    }
+
+    .brand-title {
+      font-size: 0.72rem;
+      line-height: 1.3;
+      letter-spacing: 0.4px;
+      color: #5c3a18;
+      text-shadow: 1px 1px 0 #fff8e7;
+    }
+
+    .player-tag {
+      font-size: 0.46rem;
+      line-height: 1.3;
+      color: #6b4c2a;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .time-pill {
+      background: #5c3a18;
+      color: #fef3c7;
+      padding: 5px 8px;
+      border: 2px solid #2b2118;
+      font-size: 0.5rem;
+      line-height: 1.2;
+      white-space: nowrap;
+    }
+
+    .lcd-bezel {
+      background: #4a5568;
+      border: 4px solid #2d3748;
+      border-radius: 16px;
+      padding: 10px;
+      box-shadow: inset 0 3px 0 #718096;
+    }
+
+    .lcd-screen {
+      position: relative;
+      background: linear-gradient(180deg, var(--lcd-day-top) 0%, var(--lcd-day-bot) 100%);
+      border: 3px solid #1a202c;
+      border-radius: 8px;
+      padding: 10px 10px 12px;
+      text-align: center;
+      overflow: hidden;
+      transition: background 0.35s ease, color 0.35s ease;
+    }
+
+    .lcd-screen::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background-image: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.05) 50%);
+      background-size: 100% 4px;
+      pointer-events: none;
+    }
+
+    .lcd-screen.is-night {
+      background: linear-gradient(180deg, var(--lcd-night-top) 0%, var(--lcd-night-bot) 100%);
+      color: #f8fafc;
+    }
+
+    .lcd-screen.is-shadow {
+      background: linear-gradient(180deg, var(--lcd-shadow-top) 0%, var(--lcd-shadow-bot) 100%);
+      color: #e2e8f0;
+    }
+
+    .lcd-screen.is-heaven {
+      background: linear-gradient(180deg, var(--lcd-heaven-top) 0%, var(--lcd-heaven-bot) 100%);
+      color: #422006;
+    }
+
+    canvas#petCanvas {
+      display: block;
+      width: 100%;
+      max-width: 320px;
+      height: 256px;
+      margin: 0 auto 6px;
+      image-rendering: pixelated;
+      image-rendering: crisp-edges;
+    }
+
+    .stage-label {
+      font-size: 0.68rem;
+      line-height: 1.4;
+      letter-spacing: 0.6px;
+      margin: 2px 0 4px;
+      text-transform: uppercase;
+    }
+
+    .encouragement-banner {
+      display: none;
+      margin: 4px auto 2px;
+      padding: 5px 8px;
+      max-width: 320px;
+      background: rgba(255, 255, 255, 0.72);
+      border: 2px solid #2b2118;
+      color: #1e1b18;
+      font-size: 0.46rem;
+      line-height: 1.5;
+    }
+
+    .encouragement-banner.visible {
+      display: block;
+    }
+
+    .lcd-screen.is-night .encouragement-banner,
+    .lcd-screen.is-shadow .encouragement-banner {
+      background: rgba(15, 23, 42, 0.8);
+      color: #fde68a;
+      border-color: #94a3b8;
+    }
+
+    .shadow-checklist {
+      display: none;
+      margin-top: 6px;
+      padding: 5px 8px;
+      background: rgba(15, 23, 42, 0.78);
+      border: 2px solid #64748b;
+      font-size: 0.45rem;
+      line-height: 1.4;
+      color: #cbd5e1;
+    }
+
+    .lcd-screen.is-shadow .shadow-checklist {
+      display: inline-block;
+    }
+
+    .pixel-stats {
+      margin-top: 12px;
+      background: #fff8e7;
+      border: 3px solid #8c6239;
+      padding: 10px;
+      display: grid;
+      gap: 9px;
+    }
+
+    .stat-item {
+      font-size: 0.5rem;
+      line-height: 1.3;
+    }
+
+    .stat-head {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 4px;
+      gap: 6px;
+    }
+
+    .pixel-bar {
+      height: 12px;
+      background: #e5d5b5;
+      border: 2px solid #2b2118;
+      padding: 1px;
+    }
+
+    .pixel-fill {
+      height: 100%;
+      transition: width 0.25s steps(10);
+    }
+
+    .fill-light { background: #eab308; }
+    .fill-day { background: #2563eb; }
+    .fill-shadow { background: #475569; }
+
+    .button-pad {
+      margin-top: 14px;
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+    }
+
+    .px-btn {
+      font-family: var(--px-font);
+      font-size: 0.58rem;
+      line-height: 1.3;
+      letter-spacing: 0.4px;
+      padding: 11px 6px;
+      border: 3px solid #2b2118;
+      border-radius: 10px;
+      cursor: pointer;
+      color: #ffffff;
+      text-align: center;
+      box-shadow: 0 4px 0 #2b2118;
+      transition: transform 0.08s ease, box-shadow 0.08s ease;
+    }
+
+    .px-btn:active {
+      transform: translateY(3px);
+      box-shadow: 0 1px 0 #2b2118;
+    }
+
+    .btn-pray { background: #2563eb; }
+    .btn-bible { background: #059669; }
+    .btn-good { background: #d97706; }
+
+    .btn-count {
+      display: block;
+      margin-top: 5px;
+      font-size: 0.48rem;
+      line-height: 1.2;
+      background: rgba(0, 0, 0, 0.22);
+      padding: 2px 4px;
+    }
+
+    .dev-controls {
+      margin-top: 12px;
+      padding-top: 9px;
+      border-top: 2px dashed #c9a96e;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 6px;
+      font-size: 0.46rem;
+      line-height: 1.3;
+      color: #6b4c2a;
+    }
+
+    .mini-group {
+      display: flex;
+      gap: 5px;
+      flex-wrap: wrap;
+    }
+
+    .mini-px-btn {
+      font-family: var(--px-font);
+      font-size: 0.45rem;
+      line-height: 1.2;
+      background: #efe0be;
+      color: #2b2118;
+      border: 2px solid #2b2118;
+      padding: 4px 6px;
+      cursor: pointer;
+    }
+
+    .modal-backdrop {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(15, 23, 42, 0.65);
+      justify-content: center;
+      align-items: center;
+      padding: 16px;
+      z-index: 50;
+    }
+
+    .modal-backdrop.open {
+      display: flex;
+    }
+
+    .modal-card {
+      width: 100%;
+      max-width: 390px;
+      background: #fff8e7;
+      border: 4px solid #2b2118;
+      box-shadow: 0 8px 0 #2b2118;
+      padding: 14px;
+      font-family: var(--px-font);
+      color: #2b2118;
+    }
+
+    .modal-title {
+      font-size: 0.64rem;
+      line-height: 1.4;
+      margin: 0 0 8px;
+      text-transform: uppercase;
+    }
+
+    .modal-hint {
+      font-size: 0.48rem;
+      color: #5c3a18;
+      margin-bottom: 8px;
+      line-height: 1.55;
+    }
+
+    .welcome-call {
+      background: #fef3c7;
+      border: 2px solid #8c6239;
+      padding: 9px;
+      font-size: 0.48rem;
+      line-height: 1.6;
+      color: #422006;
+      margin-bottom: 10px;
+    }
+
+    .px-single-input {
+      width: 100%;
+      font-family: var(--px-font);
+      font-size: 0.52rem;
+      line-height: 1.4;
+      padding: 8px;
+      border: 2px solid #2b2118;
+      background: #ffffff;
+      color: #1e1b18;
+    }
+
+    .about-body {
+      background: #ffffff;
+      border: 2px solid #8c6239;
+      padding: 10px;
+      font-size: 0.48rem;
+      line-height: 1.65;
+      color: #1f2937;
+      margin: 8px 0 10px;
+    }
+
+    .about-body p {
+      margin: 0 0 8px;
+    }
+
+    .about-body p:last-child {
+      margin-bottom: 0;
+    }
+
+    .about-credit {
+      margin-top: 8px;
+      padding-top: 8px;
+      border-top: 1px dashed #c9a96e;
+      color: #5c3a18;
+    }
+
+    .px-input {
+      width: 100%;
+      font-family: var(--px-font);
+      font-size: 0.5rem;
+      line-height: 1.55;
+      padding: 8px;
+      border: 2px solid #2b2118;
+      background: #ffffff;
+      color: #1e1b18;
+      resize: vertical;
+      min-height: 68px;
+    }
+
+    .modal-actions {
+      margin-top: 10px;
+      display: flex;
+      justify-content: flex-end;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .journal-list {
+      max-height: 240px;
+      overflow-y: auto;
+      display: grid;
+      gap: 8px;
+      margin: 8px 0 10px;
+    }
+
+    .journal-entry {
+      background: #ffffff;
+      border: 2px solid #8c6239;
+      padding: 8px;
+      font-size: 0.46rem;
+      line-height: 1.55;
+    }
+
+    .journal-meta {
+      color: #5c3a18;
+      margin-bottom: 4px;
+      display: flex;
+      justify-content: space-between;
+      gap: 6px;
+    }
+
+    .journal-text {
+      color: #1f2937;
+      word-break: break-word;
+    }
+  </style>
+</head>
+<body>
+  <div class="pocket-shell">
+    <div class="top-brand">
+      <div class="brand-block">
+        <span class="brand-title">ANGEL COMPANION</span>
+        <span class="player-tag" id="playerNameLabel">ANAK TERANG</span>
+      </div>
+      <span class="time-pill" id="daytimeBadge">☀️ SIANG</span>
+    </div>
+
+    <div class="lcd-bezel">
+      <div class="lcd-screen" id="lcdScreen">
+        <canvas id="petCanvas" width="64" height="64"></canvas>
+        <div class="stage-label" id="stageTitle">SOUL</div>
+        <div class="encouragement-banner" id="encouragementBanner">
+          Hari ini belum mencatat kegiatan. Yuk mulai dengan PRAY, READ, atau ACT!
+        </div>
+        <div class="shadow-checklist" id="shadowChecklist">
+          PRAY <span id="recPray">0/1</span> | READ <span id="recBible">0/1</span> | ACT <span id="recGood">0/1</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="pixel-stats">
+      <div class="stat-item">
+        <div class="stat-head">
+          <span>LIGHT OF LIFE</span>
+          <span id="lightText">15/300</span>
+        </div>
+        <div class="pixel-bar"><div class="pixel-fill fill-light" id="lightBar" style="width: 5%;"></div></div>
+      </div>
+
+      <div class="stat-item">
+        <div class="stat-head">
+          <span>33 DAYS JOURNEY</span>
+          <span id="dayText">1/33</span>
+        </div>
+        <div class="pixel-bar"><div class="pixel-fill fill-day" id="dayBar" style="width: 3%;"></div></div>
+      </div>
+
+      <div class="stat-item">
+        <div class="stat-head">
+          <span>SHADOW</span>
+          <span id="shadowText">0%</span>
+        </div>
+        <div class="pixel-bar"><div class="pixel-fill fill-shadow" id="shadowBar" style="width: 0%;"></div></div>
+      </div>
+    </div>
+
+    <div class="button-pad">
+      <button class="px-btn btn-pray" onclick="openReflectionModal('pray')">
+        PRAY
+        <span class="btn-count" id="prayCount">0x</span>
+      </button>
+      <button class="px-btn btn-bible" onclick="openReflectionModal('bible')">
+        READ
+        <span class="btn-count" id="bibleCount">0x</span>
+      </button>
+      <button class="px-btn btn-good" onclick="openReflectionModal('good')">
+        ACT
+        <span class="btn-count" id="goodCount">0x</span>
+      </button>
+    </div>
+
+    <div class="dev-controls">
+      <span>JURNAL: <strong id="journalTotal">0</strong></span>
+      <div class="mini-group">
+        <button class="mini-px-btn" onclick="openJournalModal()">JURNAL</button>
+        <button class="mini-px-btn" onclick="openAboutModal()">ABOUT</button>
+        <button class="mini-px-btn" onclick="resetGame()">RESET</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal Awal: Masukkan Nama & Ajakan Anak-Anak Terang -->
+  <div class="modal-backdrop" id="welcomeModal">
+    <div class="modal-card">
+      <h2 class="modal-title">SELAMAT DATANG</h2>
+      <div class="welcome-call">
+        Mari melangkah bersama menjadi <strong>anak-anak Terang</strong> melalui doa, bacaan firman, dan perbuatan baik setiap hari selama 33 hari.
+      </div>
+      <div class="modal-hint">Silakan masukkan namamu sebelum memulai perjalanan:</div>
+      <input
+        type="text"
+        class="px-single-input"
+        id="playerNameInput"
+        maxlength="24"
+        placeholder="Tulis namamu..."
+      />
+      <div class="modal-actions">
+        <button class="mini-px-btn" style="background:#facc15;" onclick="savePlayerName()">MULAI</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal Catatan Refleksi -->
+  <div class="modal-backdrop" id="reflectionModal">
+    <div class="modal-card">
+      <h2 class="modal-title" id="refModalTitle">PRAY</h2>
+      <div class="modal-hint" id="refModalHint">Catat doa atau misa hari ini.</div>
+      <textarea class="px-input" id="refInput" maxlength="220" placeholder="Contoh: Misa Harian, Rosario, Novena, Doa Malam, Doa Angelus, dll."></textarea>
+      <div class="modal-actions">
+        <button class="mini-px-btn" onclick="closeReflectionModal()">BATAL</button>
+        <button class="mini-px-btn" onclick="commitReflection(true)">LEWATI</button>
+        <button class="mini-px-btn" style="background:#facc15;" onclick="commitReflection(false)">SIMPAN</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal Riwayat Jurnal -->
+  <div class="modal-backdrop" id="journalModal">
+    <div class="modal-card">
+      <h2 class="modal-title">JURNAL 33 DAYS</h2>
+      <div class="modal-hint">Catatan PRAY, READ, dan ACT selama perjalanan 33 hari.</div>
+      <div class="journal-list" id="journalList"></div>
+      <div class="modal-actions">
+        <button class="mini-px-btn" style="background:#facc15;" onclick="closeJournalModal()">TUTUP</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal About -->
+  <div class="modal-backdrop" id="aboutModal">
+    <div class="modal-card">
+      <h2 class="modal-title">ABOUT ANGEL COMPANION</h2>
+      <div class="about-body">
+        <p><strong>Angel Companion</strong> bertujuan menjadi <strong>jurnal doa</strong> harian untuk menemani perjalanan rohani selama 33 hari dan mengajak kita hidup sebagai <strong>anak-anak Terang</strong>.</p>
+        <p>Kumpulkan hingga <strong>300 poin</strong> Light of Life (+6 poin tiap catatan). Setiap hari catat <strong>PRAY</strong>, <strong>READ</strong>, dan <strong>ACT</strong> (Refleksi ungkapan syukur dan perbuatan baik hari ini); jika salah satu terlewat pada hari sebelumnya akan terkena pengurangan <strong>2 poin</strong>.</p>
+        <p class="about-credit">Dikembangkan oleh Papahe Myria</p>
+      </div>
+      <div class="modal-actions">
+        <button class="mini-px-btn" style="background:#facc15;" onclick="closeAboutModal()">TUTUP</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const STORAGE_KEY = "angel_companion_32x32_v12";
+    const CANVAS_SIZE = 64;
+    const MAX_LIGHT = 300;
+    const TARGET_DAYS = 33;
+    const LV4_DEADLINE_DAY = 30;
+    const LV4_MIN_LIGHT = 270; // 90% dari 300 poin
+    const ACTION_GAIN_POINTS = 6;
+    const MISSED_CATEGORY_PENALTY_POINTS = 2;
+    const MS_PER_DAY = 24 * 60 * 60 * 1000;
+
+    const ENCOURAGEMENT_MESSAGES = [
+      "Hari ini belum ngapa-ngapain nih. Yuk mulai dengan 1 langkah kecil: PRAY, READ, atau ACT!",
+      "Tetap semangat, anak Terang! Satu doa singkat atau satu perbuatan baik hari ini sudah berarti.",
+      "Belum ada catatan hari ini. Luangkan sebentar untuk menyapa Tuhan dan sesama hari ini ya!"
+    ];
+
+    const PALETTE = {
+      ".": null,
+      "K": "#2b1d16",
+      "N": "#0f172a",
+      "D": "#334155",
+      "Q": "#64748b",
+      "H": "#94a3b8",
+      "I": "#f8fafc",
+      "W": "#ffffff",
+      "C": "#e2e8f0",
+      "L": "#cbd5e1",
+      "V": "#c4b5fd",
+      "J": "#a78bfa",
+      "M": "#8b5cf6",
+      "X": "#6d28d9",
+      "B": "#3b82f6",
+      "U": "#1d4ed8",
+      "T": "#60a5fa",
+      "F": "#93c5fd",
+      "Y": "#facc15",
+      "O": "#f59e0b",
+      "S": "#fde68a",
+      "G": "#fef9c3",
+      "Z": "#fff7cc",
+      "A": "#ea580c",
+      "E": "#dc2626",
+      "R": "#f87171",
+      "P": "#fda4af",
+      "l": "#640908",
+      "m": "#380806",
+      "n": "#ef111a",
+      "o": "#fb2518",
+      "p": "#fc3a0d",
+      "q": "#fd5006",
+      "r": "#fe6e03",
+      "s": "#fe9c05",
+      "t": "#fddb12",
+      "u": "#fdf05b",
+      "v": "#fcf9cc",
+      "w": "#0e0009",
+      "x": "#1a0127",
+      "y": "#260133",
+      "z": "#32123e",
+      "0": "#480965",
+      "1": "#671984",
+      "2": "#c339f6",
+      "3": "#da49fc",
+      "4": "#e75dfb",
+      "5": "#f3dced",
+      "6": "#440604",
+      "7": "#662016",
+      "8": "#9b2d07",
+      "9": "#dd7110",
+      "a": "#fbca03",
+      "b": "#fcce0c",
+      "c": "#fee62d",
+      "d": "#faf06d",
+      "e": "#fefef2",
+      "f": "#c2c5ea",
+      "g": "#9c8aad",
+      "h": "#ffedd5",
+      "i": "#fed7aa",
+      "j": "#f5b99a",
+      "k": "#e99b7d"
+    };
+
+    // GOING TO HEAVEN: 1 frame statis sebagai lanjutan angel 4 (seraphim)
+    const GOING_TO_HEAVEN_FRAMES = [
+      [
+        "..GGG..OOO..III..N...N..GGG.....TTTTT..OOO.....H...H..EEEE..A...A..V...V..EEEE..N...N..",
+        ".G.....O.O...I...NN..N.G..........T....O.O.....H...H..E.....A.A...V...V..E.....NN..N..",
+        ".G.GG..O.O...I...N.N.N.G.GG.......T....O.O.....HHHHH..EEE...AAA....V.V...EEE...N.N.N..",
+        ".G..G..O.O...I...N..NN.G..G.......T....O.O.....H...H..E.....A.A....VV....E.....N..NN..",
+        "..GGG..OOO..III..N...N..GGG.......T....OOO.....H...H..EEEE..A.A.....V.....EEEE..N...N.."
+      ]
+    ];
+
+    function make64(rows) {
+      return rows.map((line) => {
+        if (line.length === 64) return line;
+        if (line.length < 64) return line.padEnd(64, ".");
+        return line.slice(0, 64);
+      });
+    }
+
+    const SOUL_FLAME_FRAMES = [
+      make64([
+        "................................................................",
+        "................................l8..............................",
+        "..............................8Eppp8............................",
+        "...........................Ennorsssr8...........................",
+        "..........................Ennnnnopsarl..........................",
+        ".........................lnn8llnopsss8..........................",
+        ".........................ln8..mlnonras8.........................",
+        "..........................ll...6lEnpssr8m.......................",
+        "...................w8m..........6lnnrsa96.......................",
+        "..................K7u7K..........lnnrssO86......................",
+        "..................7uGd8.........6lnnqsssA6m.....................",
+        "..................K7d7K.....l6.6lnnnqsas96m.....................",
+        "...................w8m.....68n8lEnnpraOqr8m.....................",
+        "..........................mllnnnnnprrtOqr8m...m.................",
+        "................8E.......6lnnnnnnprratOpA7m..7Ow................",
+        "..............mEol.....mlEnnnnoqrrsttYqq866.7ki9K...............",
+        "..............6no8....mlEooppprrrsudcqpq86..7kG9K...............",
+        ".............mEoqpm..mlnoorsrrrrruSrqpqAl6...6Ow................",
+        ".............loprrl.66EopsassssrqSrppqA86.......................",
+        ".............6orsaAw68oprasssaaqquppqAl6m..EEl..................",
+        ".............m8qacO668ppsassaaapqrpqpl6...6Eqol.................",
+        "..............wl9udm6lEprssstcaqppppo8l...wlssEw................",
+        "...............w8u8wll8pprsaddarqpoqsp86..lObs8w................",
+        "...............w88m..6l8pqsaSdasrpprtq866.8Y86m.................",
+        "................lw....ll8qqatctasrprtsAn8m78w..................",
+        "............7K.....ll66lEqqsatutasrstarpn8m.....................",
+        "...........KdkK..m68nll8orrqrbGStassstaroE6....8l...............",
+        "...........KkkK.m68Ell8opssqqsuvuttsssbarnll..mEol..............",
+        "............7K.6lEonlnopstarrstGduutasstsqo8...8pEl.............",
+        "...............6EopooqrsttarracGdGGctssaarp8..w8rol.............",
+        "..............llEppqrscuusrraacuuvvStbssarp8..lpsr8m............",
+        "..............l8opsssbcOrssaatcuSvvScbsssq8ll8psarol............",
+        ".............68opsassarrsattcudGvvvSctasrql8orsbaqol............",
+        ".............6EppaassrsattcuddSvvvSuuctasq8orYctOoE6............",
+        ".............lEpstbsssatcdSSGSSvGSddSdctaropcuAqpol.............",
+        ".............6EpYcsssbtuSvvvGGSSSdSGevSucrppu9oE8l..............",
+        ".............68pYcssatuGGQ7kvGGGSSGi7QiScOqpronl................",
+        "..............lEqYsstcSG7wQQivGGGGG7Qm7idtrqonlm...............",
+        "..............lloqrOcdGQwmLQ7vGvGvgmC7wQGcarp86.................",
+        "..............66EprOcSvQmm6mQvGGGvgm66mDvdtrq86.................",
+        "...............6loqscdvQ69Y7QvvvvvglY96Dvdtsq86................",
+        "...............m68qrYdjRROsRivRA9GvksrRRjdYrplm................",
+        "..............6lwlEqOukRkkkivGjkkGvikkkRRdOq8m..8l.............",
+        ".............w88wm8prOdkkSGvGGvvvvGvvSkkjOqpl..wA8.............",
+        ".............6sOl.l8ArOuuuuSvvGGGGvGduuurq8lm.w7a9w............",
+        ".............m9br8.mlEqsccYcdGvvvvSuccOqp866.mAbt7.............",
+        "..............69pn..mlEAqrrstuSSSdctsqpn86m..8q99m............",
+        "...............wl8...666nopqrstcctbsqo8l6m...Elww............",
+        ".......................6ll8oprstYOrqEllm.....6.................",
+        "..........................l8npsssro8l...........................",
+        "...........................6lnqrro8l............................",
+        "............................wlnqp8m.............................",
+        ".......................wl887.w8on6.7886w........................",
+        ".....................m8AA88lw.w8l.w688AAlm......................",
+        "....................mAqr868886mmm688769rr8w.....................",
+        "....................m8ArsYtcukkkkkucbOsrA7w.....................",
+        ".....................w6889sOcGGGGGcYsA88mw......................",
+        ".......................ww68A99999998lmww........................",
+        "..........................wmm66666mw............................",
+        "................................................................",
+        "................................................................",
+        "................................................................",
+        "................................................................",
+        "................................................................"
+      ]),
+      make64([
+        "...........................wwwwwww..............................",
+        "..........................wnooooonw.............................",
+        ".........................oosaaaaroon............................",
+        "........................mooooooraaaoo...........................",
+        ".......................Eooooooorbaaooo..........................",
+        ".......................En86wwlooopaaqolm........................",
+        ".......................8ol8..6looopaapE6........................",
+        "........................o88..6lnoopaapEl........................",
+        "..................mmw.........wlooorarAll.......................",
+        ".................w8um.........6lnoorarAll.......................",
+        "................m8kG8m........lnoorraarpl.......................",
+        "................muGeum.......llnoorrtaarll8....w................",
+        ".................m7umw.....llnnooqrrcbarol8...mum...............",
+        "..................m6w.....l8noopqqrsGtarol8..mcecm..............",
+        ".........................ll8nooqqqrsGtarpl8..w6umm..............",
+        "........................wlorssqqrsbSGYsppl8...wuw...............",
+        "...............onm......lossqqqqstZGOspplw......................",
+        "..............oon......wlossqqqqtcGGssppl.......................",
+        ".............noo......EooqsqssqqGGGssppl...noo8.................",
+        "............noro.....loopsqsssqqGGsrppl.....orol................",
+        "............oosqm..mloopqqssstqqYGspon.....w8sqE................",
+        "............ooatqw.mloopqssbttqqpiqpl6....wqsarA................",
+        ".............osccm.mlpppssbccYrqppqo6m6o..ltct8.................",
+        "..............pcum.mlpppsatGcbsqqppooloo..AcrE..................",
+        "..............wc6..mllppstdGctssrqpoooqo6.mu8...................",
+        "...............m.....loppbuGcttssrqppptoo..l8...................",
+        "..........mu..........llpqtGGcutssrrqttpol6.w...................",
+        ".........muhY....lll..llpqqrucvtttrrrttroolm....................",
+        ".........wmuw...llEl.lEEptqqtcZvtctrrttsrooo6..Eonm.............",
+        "..........Km...lllolllopqtsqrcGvtcccrrttsqoo6...noolw...........",
+        "...............looolloppttsrrtGvtccctssttsrpol...nooww..........",
+        "..............loopooprttctOrrtGctcvvctssttYrol...wooom..........",
+        ".............llopqrqsauGGrrrttcccuhvdtssttapol...wooonw.........",
+        ".............lppprsssuSOrrrtbttuudeevtbsttrpol...oosoow.........",
+        ".............lpprtsstusstttttcuudeeevtbsttqpnl.moosaoow.........",
+        "...........lllpqstssassstttbuuudeeeeZctOsspp6.nopsatoow.........",
+        "...........llppsttssssattccddddeeeehuuctssrp66orstttoo..........",
+        "...........llpqtdassstcuuSSGSddeeeuudSduttrropruGGcoow..........",
+        "...........llpqtGassttuddGvvSSSeedddGvvuutarpprGGppom...........",
+        "...........llpptGusstudSGvvvvGSSGddGvvvddutYqqSGpooo............",
+        "............mlpqbGstcdGvvvvvvvGGGGvvvvvvvSubrqYqol..............",
+        ".............lpqrGstuSvvmmmhvvvvvvvvmmmmvGdtsqppol..............",
+        ".............llpqsstdGvmmmmmhvvvvvvmmmmmmvSusqpol6..............",
+        "..............llqqstdGmmhvvmmZvvvvvmmvvwmmvdtrppl...............",
+        ".............m.lpqsbdGkRvvvvKvvvvvvKvvvikkGdtrppl...............",
+        "............8n..lorsdRRRRvvvvvqqqqvvvvvRRRRdaq88l...............",
+        "...........mr8..l8psskRRkGvvvvvZZvvvvvGkRRjrrpll..w8............",
+        "...........lar6wlllrrduuuuGvvvvvvvvvvSucudurr8ll..msw...........",
+        "...........lttrnww.nrruuucuSGvvvvvvvGucudSrr8l..w6ra6...........",
+        "...........wOucrow.lprrOctccSGvvvvvGccccarqAl..l8Ata6...........",
+        ".............m6oow..lnrrsssacucccccccssrppl6..Epsuu8w...........",
+        "................nw...ll8pprsscccccccsrp8lll...no886m............",
+        "................w.....ll88oqrsacccYrq88l......nww...............",
+        "......................w..l8nppstttsp8..w........................",
+        ".........................lllnosaaspll...........................",
+        ".............................lossr86............................",
+        "........................wmww..8pqlw..wmw........................",
+        ".....................w66rss9...oo...6sssllw.....................",
+        "....................lArs96m6mw....wm666OsrA6....................",
+        "...................wArrc88ccc8666l8tcc88crrl....................",
+        "....................ml8rsOaSvGGvvvGvSassr8lm....................",
+        ".....................wmllsssavvvvvGassrl6mw.....................",
+        ".......................wwml8AAAAAAAA86mw........................",
+        "..........................wwwmmmmmmww..........................."
+      ])
+    ];
+
+    const ANGEL_1_FRAMES = [
+      make64([
+        "........................KKKKKKKKKKKKKKKK........................",
+        "........................9assscduudcsssaO........................",
+        "....................9999YShhhheeeehhZhSu9999K...................",
+        "..................9OYuucudGGGZvvvvGGGGSucuucO9..................",
+        ".................9atdvIvusOOacduudcaOOOOGeeSca9.................",
+        "...........O8..K9cGIYYYY9KKwwwKKKKwwwKwKYYYtvGc9K...............",
+        ".........K7dO7.7aGGu9777K...............7778uGZaK...............",
+        ".........7tCSO.KshSO7KK..................K77OShsK...............",
+        "...........t9..KadveYbOKKKw...mmmmmmm..KK9bbheSaK...............",
+        "...........8K...KOdGheiaaa9wKm7777777K9aaSehiuOK................",
+        ".................7OYYGWvGd7776Q555LL7679SeecYO7................",
+        "..................7889gggQ6QLL5WWWWWLLQ7Qku887.......7O........",
+        "........OK...........766666gWWWWWIIIWW5gm88.........w9d7........",
+        ".......7u7........m66mgLLLf5IIIC5CCCC5ICg7wmm......K9SIu7K......",
+        "......7cIu7......wK7QQ5WWI5WWWIVVVVVVV5IIQ777w.....adIeec8......",
+        ".....OuIeIuO.....6QWWWWWC5IIWIVVCIIIIVVC5IIIg6K.....7detK......",
+        ".....K7uId8K...wKQHWIIIC5IWWW5VCWWWWWIVVVIWWLg7m.....9uK........",
+        ".......8S9w....mlCWIICCIIWWI5V5WWWIIIW5VVCIIWW7lK....7a..........",
+        ".......wtK....m7HCIWIIWWWII55CWWWI555IfVCCCCIWH7m................",
+        "........K.....6QWIWIIWWWWI5IIWIII55IIIC5IWICCWI7m................",
+        "...........6mmgLIIWIIIIWWWIWWI5IIWCJJJfIIWWICIIg7m......KK......",
+        ".......w7777fIIWCfWI55IIWWI55IWIfggMVIIIIWICIWQ6......O9.........",
+        ".......w7LIIIIWIVII55555IIIVCWWfgiPgJfWCIWWICIQ6.....OGS9........",
+        ".......w7fIIWWIVVICV5555555JCWWfghhLHJWICIWWCVQ6Kw...7du7........",
+        "........67g5ffVVIWIVVVVIIVJCIIIVghhefJCWCCIICV16l77...98.........",
+        "...........m7gVVVCWWICVJJJJfCWIIfgJhhh5JVWICIIICLggQ6...........",
+        "............67LCIWWIIWJgfHM5II55Jg5hhhhLJIWIICCWWWWg6............",
+        "...........6g5IIIII5LfgLehHVVffVgLhhhhhhgfIWICVC55f1m............",
+        "...........6gWI5V555gg5hhhhggggg5hhhhhhhLggIII5VVV7m.............",
+        "...wwwww...6gIIfggggg5hhhhhhhhhhhhhhhhhhh5gggggVH7K.....wwwww...",
+        "...78778K.w6gL55fJggfhhhhhhhhhhhhhhhhhhhhh5gggV5H6w....K88887...",
+        ".K7j5555Ql6.67555Vg5hheQ667hehhhhhheg667iehhgJV5HlK..ml75555j7m.",
+        ".m7LWWWWLgQm67VVggg5hhQ6gg77jehhhhhg6Qg77jehgMJ5Hl..67jjWWWWL86.",
+        ".m7LIIWWWWj777gggHg5hQmgeejmgeheehe77heL77LhggggQ7K78gWWIIIIL76.",
+        ".m8HIWWIIIIWg667P5g5hQQihhegjek99iegiehhk8jegfi666l7IWIIIWWIf87.",
+        "..mQHCWWWWIWLgg7gef5iPPPhhhehhjkkhhehhhPPPPhf5i6QggjIWWWWWCHQ6w.",
+        "...lQfLCCIWIWWW7Q5hLPPPPihhhhheeehhhhhhPPPP5hhg6HWWWIWWCCCfgl...",
+        "....7QFFfCIWWII5Q677jhPihhhhhhhhhhhhhhhhPPh7777LIIIIWICffFQ7....",
+        "....wKQQfVffIWIWLgg77geeeeeeehhhhhheeeeeehQ7gggWWIWIffVfQQKw....",
+        ".....K77HfVFCIWWWWWH77gjjjjjjhhhhhijjjjjgQ6QWWWWWWICFVff77K.....",
+        "....7QWIIWIWffIIIIIIf76666666kPPPiQ6766676gCIIIIIIffIIIIII87....",
+        "....7QIWWWWWCfVVCWWCfff767ChOOj55kOkCg67gfffIWWfVVfCWWIWWI87....",
+        "....7QCIWWICCCCCCCCffff7g5WWiYYduadZWIL7gfffCCCCCCCLCCWICLQ7....",
+        "....m7gfCICfFVWWIVfffg7QLWCCWSusOuvICWWg7DfffVVIWWfFfCICfg7m....",
+        ".....wlgfHHHJFIICfCffg65WICfCWWYSWICfIIWQ7ffCCfCIIVJHHHfglw.....",
+        ".......77776HffffCWfCg65WIWIT5dccSVFWWIWQ7CVCWCfffff77777.......",
+        ".......wK77LCIICCCLfQQHIWeGGHiYuccffvhWWLgQffLCfCIII576Kw.......",
+        ".........lQIIIWLHHVf77WWeitbOhWauWjOudeIWL6HfVHHLWIIIQ6.........",
+        ".........71fCIIQ67ff7QIIuYhi75WcSWgQeiuhIH6Hff76gICCfQ7.........",
+        "..........K77777wK7767GYuheh7LWWIWQQWhiYdk6777Kw78777K..........",
+        "...........mmmm...mmQg8kZWj775WIIWg7QheS8QgKmm..wmmmm...........",
+        "...................mgC1Qgg7QLIWWWWCH7ggg1gC7m...................",
+        "..................m7jWCQ77DCWWWWWWWIH777fIe87...................",
+        ".................77CWIICfffIWWWWWWIWCffLIWIIg7w..................",
+        ".................78SZWICCCIWWWWWWWWWICCCCWeG97w..................",
+        ".................78uccCCIWWWWWWeeeeIWWWICiYu97w..................",
+        ".................7779udtuivvvGSddddSivGutuu877..................",
+        "..................m77998OtcuutY99989tctO89876....................",
+        "....................mmmm8kkkkk966778kkk9mmm.....................",
+        "........................m66666777jik667m........................",
+        ".........................67hhhk67hehL7m........................",
+        ".........................m7gkjQ67gggg7m........................",
+        "..........................m6666..6666...........................",
+        "...........................www...wwww..........................."
+      ]),
+      make64([
+        ".........................aaaaaSSSSSdaaaaa.......................",
+        "....................aaaaadveeeeeeeeevevvSaaaa9..................",
+        "..................aaaaYYYSWWWWWWWWWWWWWWSaYYYaaY................",
+        ".................aYSSSWeeaaaaaSSSSSdbaaaaeeWvZSaa...............",
+        "................OSZIabsss................sssabWWua..............",
+        "...........cWY..aWhbY.......................YaYWda..............",
+        "............G...aWea.........................9aWda..............",
+        "........wm......aSGWaaa.....................aabWZds.............",
+        "........Ku......msYdIWWbaaswww77777777w9saaWWedsa................",
+        ".......KuWtw.....9aaaZWWed77777eIIIII7777SSWaOs98................",
+        "......uGWWeuK.....YaadeeeS777PIWWWWWIPQ77SSeOOO..................",
+        ".......mcWbm.........Ol77777VWWWWWIIIII577Os.........mGm........",
+        ".......w7Wm.........6l7IIWfWIWWWIIIIIIIII77..........SWd.........",
+        "........mc........m7l7hWWIVWWWW5VVVVVVVVII7llll......mu..........",
+        ".........K.......77IWWWWVVWWWW5VVWWWWIVVVII57l7..........m7......",
+        ".................7jWWW5VVWWWWCVVIWWWWI5VVIIIII77........KYcK.....",
+        "................7IWWW55IWWWWI5VWWWWWWWI5VVIWWWIW77.....KYeeum...",
+        "...............7IWWW55WWWW555VIWWWW5CCIIJVfVWWWe77.....mkee9m...",
+        "..............77WWWIIWIWWW55WWIWWW55555fJIIWfWWWQ7......KcuK....",
+        "...........77.77WWWIWW5WWWWWWWWI5WWI555VIIWWWCWWg7.......88......",
+        "..........77Q7gV5W5VWI55WWWWWW55WWWMMggfIIIWWILWII7..............",
+        "...Su7....77IIWWWWVWWI5555WWI5VWWWggPPgggICIWWCCII7..............",
+        "..du......77CWWWWVVWWV5555555VJWWIg5hhhggWWCWWWIVV7..............",
+        "..mw7O.....77V5IVVWWWIVVV555VVWWC5M5hhhfg5WWIWWIVV7..............",
+        ".wwGd.......7VVVVWWW55IgMgMMWWW55ggehhh5HVWWCCCCJJ7777......bu...",
+        "KKmS..777....7WIWWWW55Igeegg55C5IghhhhiiigWIICCWWWWI57.......9S..",
+        "SwS..7III7..7III5II55JgghhLHgVVJgHhhhhhhhgIIWWIVWWI5g7..7777.w6a.",
+        "S.7.77WWW77.7WWWV5C5IMMhhhhhgMggghhhhhhhhggg55C5VVV77..w8787.Sm.",
+        "....7IWWWW7.75C5gMggMhhhg666hhhhhhhhh66m5hgMMggJVVf77..7eWW77mS.",
+        "....7CWWWWIww7P55VVMehhLm6mmihhhhhhhi6m6Qhh5gggM5Cl...7IWWWI7m97",
+        "....7VWWWWW77wQ555Vghhhm66WI6hhhhhhh6II6mmhhhgVV5Il..7IWWWWI7mwd",
+        "..777VCWWWWW7llVgggghhg6z6mm6hhhhhhh6666g6hhhgVV55lm77WWWWWC7m.u",
+        ".77IW7VCCWWWWQ770Leghhg68sOslhhhhhhhlsssj6hhhgggVVl77WWWWWCV7m..",
+        ".77WWWIVVCWWWW7l7LhghhPPksSShhhEAEehhdSskPhhhghlll7kWWWWWCV76...",
+        ".77CWWWWIVCIWWWIwjhh5hPPPddShhhkPPhhhddSPPPhgehw6khWWWWWCfV7....",
+        ".77CIWWWWWCVVCWIV7hhLhPPPhhhhhhRPPhhhhhhPPPh5hH71WWWWWIfVV77777.",
+        "..77CCWWWICVVVCCVQ7l6hhhhhhhhhhhhhhhhhhhhhh7ll75fWWCCCVVWWWWWW7.",
+        "..w7VVfCCCVIWWCCCVfVfllhhhhhhhhhhhhhhhhhhhllg555CCCJVVIWWWWIWC7.",
+        "...77VVVVVVWWWWWCCC55Hll678QQQhhhhhggggQ7lllV55CCCCCVfIWWWWWIC7.",
+        ".....771JJIVVVWIVVCCVVVgll6llljPjii6l6llllgVV5IIWWWWWWCIWWCIV7..",
+        ".....7eWWWWICCJVIWCVVVVVlleWeashhhsaeWlllVVVV5VWWWCWWVCCCVVV7...",
+        ".....7WWWWWWfCJWWWIVV777lWWWWWbsssbWWWWI7lfVVCVVVCVVVWJJVV77....",
+        ".....7CWWWCCJJWIWWCVf77WWWWVfWWWseWWCVWWW7llVCWWCJCWWWWI77......",
+        "......7gffVV77IWCfV77WIWWWWWJJWWaWIJJWWWWWillVIIWJfIWWWWW77.....",
+        "......777777IWWIVV79ucGvWWWCJJhaSacJJWWWhbculVVIWJfCCIWWI77.....",
+        "..........6IWWWCVJ778jSSbWCj8lWWaeIsOCIbSjkllVCCIWJfVVffC77.....",
+        "..........7CCCfV77VQ7hhhiahklVWesWWl65aGhhhl7lfCCWI77fLf77......",
+        "..........7gggg77.VJ7hhhhaa7gVWIWIW1laahhhelJ.77CCC77777.........",
+        "...........7777...6677hhjllVffWWWWWVVllkhhll6.7777776............",
+        "........mm........m7Vl777fVVVWWWWWWWVVVlll7gl...777.............",
+        ".......Ovdw......w7WWVVVVVVfWWWWWWWWCVVVCCIWll..................",
+        ".......mu6......l9IWWWICCfIWWWWWWWWWWVVfCWWWeLl......m...........",
+        "................lOYYWICCWWWWWWWWWWWWWWWWCCWWWGl.....6G7..........",
+        "................l77YYCCWWWWWWWWuueWWWWWWWCCYYYl.....ueu..........",
+        ".................77YcYYeWWWWWccccccuSeWWIcYYcll......YK..........",
+        "..................lllcYaYcccccull77ccucYacclll...................",
+        ".....................ll9cccccl77lk877cccull.....................",
+        ".......................l7llll7ik7Pjl7llllw.......................",
+        "........................mmlehhhi7hhhhllll.......................",
+        "......................mw..77hhi77hhhk7...m......................",
+        "......................6K...77777.7777...me......................",
+        "......................mKmw.............9mG.......................",
+        "......................Kw6m............whwm.......................",
+        "........................6.............wc........................"
+      ]),
+      make64([
+        "................................................................",
+        "................................................................",
+        "................................................................",
+        "................................................................",
+        "................................................................",
+        "................................................................",
+        ".........................8OOOOddddOOOOO........................",
+        ".....................7999YSiiivvvviiiSu9997.....................",
+        "....................OYcuuuSiiGvvvvGiiSuuuuYOK...................",
+        "...................OudShGYOOOYkkkkYOOOOGhGSdaK..................",
+        ".................KOSeSOsO7.............OOaueGaK..................",
+        ".................KOIY9....................8YWYK..................",
+        ".............QQ..KOGiuO9................9OYivYK..................",
+        ".............jjK.K9cGiiSOO97..777777m79OSiiGc9...................",
+        ".............KK....8YcSeGdO7777jjjjg779dhicY9....................",
+        "....................779kgR87jLLWWWI5Lg79uO77....................",
+        "............k.........K777775WWWIIIII5g787........K.............",
+        "...........8G8......l77g5I55IWI55555555jl66......7SK............",
+        "..........kiWSk....lQgj5WI5IWI5V5555VV55ggQ6.....8SK............",
+        "..........7ueu7...67LWWII5IWWIVVIWWI5VVIIII76.....K.............",
+        "...........7S7...67IWWI5IWWII5VIIWIII5VVIIWIg7..................",
+        "............9...m7gWWI5IWIII5IWWWI55I5VVCCIWj7m.....KK...........",
+        "................7QWWIIIWWWI5IWIII555555IIICII7m.....99..........",
+        ".............m7mQfIWIIIIWWIWWI55IIfJJVIIWWICWj7...K8SS9..........",
+        "............m7g7f5IIVII55IWWI55IWCgggJLIIWWCIIQ6..7dhhd7.........",
+        "............mQIWWWI55I5555II5V5WWJPifgJICIWIC5Q6...Kkk7..........",
+        "............m7g5II5VIIV55555VVIIIJLhhfJCICII5VQ6mm..77...........",
+        ".............m7fVVVIWI5VVVfVV5II5gLhhLJVWCCCIVg777...............",
+        "..............m7f5IWWI5PgggJII55Jg5hijggIIICIIWII7...............",
+        ".............m7L5III55LgghLJfffVgLhhhiPg5IIIV5I5f7..............",
+        ".........kQ..m8II5V55VgLhhhLgggghhhhhhhfgf555VVf7................",
+        "........Kjk..m755Vgggg5hhhhhhhhhhhhhhhhhfggggVg7.................",
+        ".........KK...K1L55VgLhhjjjihhhhhhhhjjjhhLggV5g7...77............",
+        "...............7ffVJghhj7777jhhhhhhg677ghhfgV5g7..KSS...........",
+        "...............7ggggghi7Dhi77hhhhhj6ghg7ghLgggg7...77............",
+        "...............m77gLghg8ihhighjhihhghhhk8hLgh77..................",
+        ".................7g5fhPPPhhhhhiRkhhhhhPPPiLLh7m..................",
+        ".................m7jLPPPPhhhhhhhhhhhhhPPPPLiQl...................",
+        "...............7777ll7hihhhhhhhhhhhhhhhiiklll777m................",
+        "...........mm8QgWILQ6l7hhhhhhhhhhhhhhhhhg767Q5IIQ77..............",
+        ".........m7gg5WWIICLg1l777777gPPiiQ7777777Qf5IIIWIg77m...........",
+        ".......m7ggIWWWICV5555gg7l7gk9kiik9kgllQgf5555CIWWWIj87..........",
+        "......68jIWWWIICCCII55VV7QLWGuYSSYSeIg7gVV55CCCCCIWWWWk7m.........",
+        ".....m8jWWWIIfVCIWCCCVVg7LWCIGuOYdWCIWQQfV5CCIWCVfIIWWWj7.........",
+        ".....7kCIICCVVffCCVVCVf7LWWCfIWcSWCCIWW8gVCIfCCCVVVCIIWIj7........",
+        ".....7RfVVVJfIWCVVCfVV1geSGWJfuuuSJCeSZj7gVCfVVVCWfVV555P8........",
+        "......78QQQLIWICVCICVC7ScucdkLSuuikicucS9gfVCIVCIWWLgggg86.........",
+        "........m8LIWICVfWIVII7OkhiY9jWYSW9YkhiY8gICCWCVCIWWLQ76m.........",
+        ".........8CICCgVIICgIVg7jhhR7LWeeWg8hhh77fCffIWVfLIIIk7...........",
+        ".......9.8gffg7LICC1Vg7f7Q8QfIWWWWCg7Q7gQ1fggCWWQQf55R777.........",
+        "......k79.m66m85CCg7775CfggfCIWWWWIfHgHLLQ77755Ig77Q77KkK9........",
+        "......k979....8ffg7m8LWICCfCIWWWWWWCffCIILglmQLLRK...Kk797........",
+        ".......97......77m.m9GWICCIIWWWWWWWIICCIWZk7.m77K....7K99.........",
+        "..............K....69YuICIWWWeeZhheWWICCic97...........K..........",
+        ".............KjQ....78OcceeeeubbbbdGeeSYY97.....8................",
+        ".............Kk7.....6899cuucO9888OYucO98l.....8G8...............",
+        "......................mm7888877lRk78898mm.......k...............",
+        ".........................m68jij7jiiklmm..........................",
+        "..........................mQhhh7ihhk6...........................",
+        "...........................6777.7777.............................",
+        "................................................................",
+        "................................................................",
+        "................................................................",
+        "................................................................"
+      ])
+    ];
+
+    const ANGEL_2_FRAMES = [
+      make64([
+        "................................................................",
+        "................................................................",
+        "................................................................",
+        "...............................88...............................",
+        ".............................K7cc7K.............................",
+        ".............................8OvhO8.............................",
+        "........................788889tvet988887w.......................",
+        ".....................778jhhhSdeWWedShhhi877.....................",
+        "...................67kihiSSSduGeeGddSSiihik77...................",
+        "..................79SGiicY99OOYvhYOO99YciiGS97..................",
+        ".............KK...7OSi99876mm69ud976mm799OiSO7...K..............",
+        ".............k9...7OtO7.....wKm99ww......7OcO7..Kd7.............",
+        "...........w8iS7..89udO9776w77777777w6779Odu97..7S9.............",
+        "...........8Seed7..79dSSkY8lQIWWWWIQ78OkSSd97....8K.............",
+        "............7Sd7....79Oc87Q5IWWCVVfCg778cO97....................",
+        ".............98......w77QL5WWCfCCCVffHLQ77w.........K7..........",
+        ".....................mgjLWWICfCIWICfVCWLgQm........KkkK.........",
+        "....................7g5WWWWCCIWWWICLCCIWILgm......KkGvkK........",
+        "..........K9.......w7LWIIWCCIWWWIfCCWICIWWL7......K9GGkK........",
+        ".........KdG8......7jWCCWCCIWWWWVIWCCWICCIIH6......w9kK.........",
+        "..........79....KK6gCCfICCIWWWWfCWWfJWWIfJVg6778....KK..........",
+        "................8kQHfJCIfCWWICWVCIIfgCIIIJVgQLI7................",
+        "................7CICfJICfWICffIfIIIgQHIIWffCIIL7................",
+        "................7gCVJCWVCCfVLWffWI5kjk5IIIJVff7m................",
+        "...........77m...7QQLICJVVCIILQ5IIkkhkgCIWfgQlm...m77...........",
+        "..........7LLQm.Km7HWfgCIWILg9kIC5RjkjkLCIILf7...mgLj7..........",
+        ".........7kIWgm.7gfIIVfgggkkk955gkjhhhjgJVJfIg7..mgWIg7.........",
+        "........KgIIIgl.7fICJCLg8kihhikkkihhhhhkgJJVCWgmw7gIIIgK........",
+        ".......K8LICfIgwm7gggJL5RhQ7QhhhhhhQ77hkjIHggCgmmgIfCILQK.......",
+        ".......7gWIFCWg6..6DJVf5kQ7kQ7hhhhQ7kQ7kjCgkgf7wlgWCFIWg7.......",
+        "......mQICFFWIWgm.7fJCCLkkkijjhhhhjjhjkkLgjk7QmmgWIWFFCIQK......",
+        "......m7LVCFFCWIgm7fQLIgRPPihhhiiihhiPPkkgg7mw6gIWCFFCVf1w......",
+        ".....m7LCICfFWICIjQ77gIf8jPihhhijhhhiPPkQfH7lQjICIWFfCICL7m.....",
+        ".....7LWWCFIfffVWWILD7LIQ8jhhhhhhhhhhiQQQLg7LIWWVfffIFCWWL7w....",
+        "....m7IWIFCWIFCfFVfIC77ggQ1778kjjkg777gg777IIfVFfLVIWCFIWI7m....",
+        "....75WWCfWIFIWCVVFICffQ7D7kO98kkR8OkQQDDgfCCFFVCWIFIWfCWW57....",
+        "...675WIQgIHLWIVIIFTTJJJ07OSSY9999Ouic87gJFTTFIIVIWLJIgQIW57K...",
+        "...7LWIgQgHTfCJTIfFJQQD7QLhkYSO9i9uuOjhg77QQJFLITJCfTHgQgIWL7...",
+        "...7LLg7LICFFFTTTTFD7Q8eIIICk89ke999LIIIekQQ7JTTTTFFFCIL7gL57...",
+        "...7Q77LWWVCffFfQ776jeiSeWIfg9WWWWh8HCWWidIil77QfFffCFWWL78Q7...",
+        "...wmm7WWCfICFVf7jjjjkWchICfD89ke99DQCIeuhijjjj7fVFCIfCWW86KK...",
+        ".....7LWIfCWIFff6khihk5hcCfDBfRke89jQQCSS5khihk6ffFIWCfIWL7.....",
+        ".....85WCgWWfCfFQ7ggg8ghYCQUTj99k8kjTDHdSL7ggg7QVfCfWWgCW57.....",
+        ".....75IfQICCIVVfgQ7QQQhsfDUfjOggHkjfUQkSfQg6QgfFfICCIQfI57.....",
+        ".....7CLQgWIILHffVT7gVHhsQUBISuCCCdSIBU9SLJflgFfffLIIWgQLL7.....",
+        ".....7gQ7gWW5QgffgQ8gffi9UUFeSuWWIddeTUDk5fg8QgffHQ5WWg7Qg7.....",
+        "......777gWWH6gffQ7O8gg8UUBfiauWWCdaSfBU7kg8O77ffglHWWg777......",
+        "........7gIH7m7HglYtO87UUBTWiYeWICIcSWFBUz89cYlgf7m7HIg7........",
+        "........7gCgl.m877SSc8UUBBfedYWICCWcuhfBUU8cSS778m.7gCg7........",
+        "........K7fg7..K7OuS9QUBBTWGOjWIIIWiYiWTBUU8SuO7K..7gL7K........",
+        ".........m78m..78Yc7DBBBTChuOCWWWWWIYchCTBBQlcY8m..K88m.........",
+        "...............7Oc87BBBBFhcOkIWWWWWIjOYZFBBB78cO7...Kw..........",
+        "...............7986QBBBBi9OOkieWWWeij999fBBBQ7897...............",
+        "............87.78l7jffffk7gkuYSiiiiYckQ8LfffL7l87...............",
+        "...........7SkK..7LSSSSSO7fCWWcYYYYIWCg9OSSSdC7...9w............",
+        "..........Kuevk..7LWSdddLQ768kWWWWWk877gLddde57..9vu............",
+        "...........Kk9...K7gWWWI77m7jk87778kk667gWWWk7K..Kd7............",
+        "............KK....K777777mm7hii76kiik7.m77777K....K.............",
+        "...................KKKKKw.m7kkk7mQkkk7..KKKKK...................",
+        "...........................K7776.7777...........................",
+        "................................................................",
+        "................................................................",
+        "................................................................",
+        "................................................................"
+      ]),
+      make64([
+        "................................................................",
+        "................................................................",
+        "...............................88...............................",
+        "..............................KYtKw.............................",
+        ".............................7rSGr8.............................",
+        "........................777789tGht987777..........8K............",
+        ".....................788kiiidcheIhuuiiij888......mu8............",
+        "...............7K..78kihiSSSutdvedccSSSShik87...79vd7K..........",
+        "..............KSu.79dvGSca9999biGb9999atSGvS97..ceWWS8..........",
+        "...............7K.7kSiY987...w8cu8K...789OiSk7..K9hu7w..........",
+        "..................7Oca8m....KKm99mmm....m8acO7...mu8............",
+        "............Kw....79YSuY887m7RQQQQE7m788YuSc97....7K............",
+        "...........mc8.....79YSSdY8l8WWWWWIgl8YdSSY97...................",
+        "...........chS7.....m89a9lQIIWWVJJVIgll8a98m....................",
+        "...........Kc8........7lQIIWWCVCWIVVVfIgl7.....99...............",
+        "............Kw.......7g5IWWWVVIWWWIfJIWI5g6...KdkK..............",
+        "....................7k5WWWIfCWWWWCVfIICIW5g6...KK...............",
+        ".......89..........w7LICIILCWWWWCfWIIWICIWL7w.........77........",
+        "......9789......KE77gIfIICCWWWWCfIWCfWWIfCCg678K.....K989.......",
+        ".....w799w7876..75kgfVLWCfWWWWWVLWWLJWWWCJJQ8Lj7..77877k97......",
+        "......Kk.m855jl.7LIILJIIVIWWCVIJCIIgQfIIWJVCWIg6.7L558m787......",
+        "......7K.8gIWI7mm7CVJCWJIICJJILfWIIRkkIIWCJVCf7.K8IWIg8.8.......",
+        ".......K77VCIWj6.m71fWCJVVCIW5QLWIjkhkjCIWfMQlw.75WIfJ77w.......",
+        "......w8jLfVCIgmKK7jWCMCWWI5kEkWI5RijjR5CIWfV7mw75WCVCLj7w......",
+        ".....KRgWWWCFf587LLIIVfMgkkkkR55jkihhhjgVffJI7g675fFCIWWgQm.....",
+        "....7RLWWICTfWIQlgICJLLJ8jjQQikkjhhgQghkgJJVCLLlgCWfTCIWWj8m....",
+        "...785IIIFFFfIILmlgggff5kkK6gQhhhhgQQmQkjIJJJCg7CCCfFTFIII58K...",
+        "...8LICfTVICFFII7.67gJC5kDg7g7hhhhQQ7QDkjWPgJf7QWIFFCCFTfCIk7...",
+        "...7LCgQCICFLCWWI67gVCfIkQj999hhhhk99kQkj5kjQ77IWWVfFIIL1gIg6...",
+        "...7777IIIFIWCFVIL7LgLIRkiiObkhiihjYajikjgfkm75WWFfIIFII5777K...",
+        ".....75WWFCWCVCCCIgQ7jWgRPPjihhRRkhijPPR8Hg77LICFffCWCFWWLl.....",
+        "....7kIWfJWWVCWIVfILQ75C7jjihhhkkihhhjjQQfgQLIVVCIIFCWJLW5g7....",
+        "....7jIfVgWfMCIffCCICgQ5g7RjihhhhhhiikQg1gQ5IffLVIWFg5gVCIk7....",
+        "...m85CVg7QJTVVVWIVJfCH1gg07878kkR7877gQQgCfFVWWJJfJJ17gVCL7w...",
+        "...mgCVg77CfVJTVWfJVJJJJQ78iua9kkR9cSk71JJJJJJfWJTTFCCQ7gfI8m...",
+        "...mQC167jIIfFFJMJVVgQ177giOSSY9k8uSccjQ77QQfVJTJVFVCI577QC8w...",
+        "...m8Qm67IWIVFICVgg7gg9iWIW5k99ke999jIIIZkgg7ggVCIVVII57m6Q8m...",
+        "....mm.8jIICFIWCg887khGuvWWIf8iiWij8fIWWuShj788gCIIfCIIk7.mm....",
+        ".......8LIfMfICV7jhihkhSdICfzQjiWjk7QCIGuekhihj7VIILgfIL7.......",
+        ".......7fCgQIIVVQ7hhhkkIteL7Ug9ke99gDgCdS5khhh7QVfIIQgCH7.......",
+        ".......7fg7QICQLfQ77711Wa5QzBLR9h9kjM6fdSg7777QffgCIQ7gH7.......",
+        ".......7776QCQ1ICVM1JVgesLmUThO99kkjJ0QkSfgflMVCI1gCQ6776.......",
+        "........mmmQH77CfH77LfCis7UUCiYCfCjuCBz8uIV577HfC77H8mmm........",
+        "...........77m7Lg779QCeO7UUBeucWWIjueTUz9SIg977gf7m77...........",
+        "..............67l69a8777UUBFeaSWWCjaSfBUz778a96l76..............",
+        "................m8ScO9zUUBTWhYWWICIcSWTUUD9OtS8w................",
+        "..........KK...69cSSYDUUBBCWYOWIfCWdaSIBBUDOSSc8m...............",
+        "..........9dK..8ttY7zUUBBTWdaLWWIWWCYYZFBBUDlYct8...............",
+        ".........KSv9.m9O767BBBBTedYO5WWWWWIjOYiTBBB768Y9...............",
+        "..........7Ow..76m75fTBBhYaOPIWWWWhik99OfFFCH7m77..Kk7..........",
+        ".................75dGeWIk889OYGehZucSL79kiiSSf7....7S9..........",
+        ".................8LWcaYYkgg5ZGYsOYiIjg7fjYcSWk7.....7...........",
+        ".................m8kWeGigQ1ggLeeeW588l7gLWWWk7..................",
+        "..................m7kjjj77mlRRQQQ88jk6w6QjgQ7...................",
+        "...................m77776.w7ijk76jihk6..7766w...................",
+        ".......................w..m7ihh87hhj7m..........................",
+        ".......................Q7..m7kk7m887m..KQ.......................",
+        ".......................Q77..m76w.mmm..779.......................",
+        ".......................7Kk............kK7.......................",
+        ".........................8............8.........................",
+        "................................................................",
+        "................................................................",
+        "................................................................",
+        "................................................................"
+      ]),
+      make64([
+        "................................................................",
+        "................................................................",
+        "................................................................",
+        "...............................99w..............................",
+        ".............................w7uu7K.............................",
+        ".............................8sZvs8.............................",
+        "........................888889tvvtO88887........................",
+        ".....................788jhhhSueWWeuShhhi887.....................",
+        "..............K....78kihGiSSdcdhedcuSSiGiik86...................",
+        ".............7iK..79SvGica9OOObGGbO999aYiGvd9m..................",
+        ".............QG7..7kGiO998mmm69uu9mmmm899OiS97..................",
+        "..............7...7Ocs8......mm99mw.....w8st97..................",
+        "..................79YuYO887.78777787.788OYcY97..................",
+        "............7......79uSSdY8l7WWWWWIQ78YdSdY97...................",
+        "...........7i7......789Y97QIIWWVVJVCgl79Y986.....KK.............",
+        "..........9SeS7......w77QL5WWCVCICVVffLQ77......KkkK............",
+        "..........9SeS8......6gL5WWIVfIIWWIVJCW5LQm.....Kkk.............",
+        "...........7S7......7k5WWWWVCIWWWCVCCCCWILQm....................",
+        "............7......w7jWIIIfCIWWWIVIIWICCIWj7.........K7.........",
+        "...................7gWCCIfCWWWWWVIWCCWWCCIIgm........8kK........",
+        "................K7lQCCCWCCWWWWWVCWWfJWWWfJVQ667K....8SvkK.......",
+        "................8jggfJIIVCWWICWJIWWHgCIIWJVgQ5k6...wkGeS7.......",
+        "..........K.....7LIIVJICCWICVfCVIIIggfIIWVVCICgm.....9S7........",
+        ".........QkK....6QfVJCIVCCVVLWffWILkjk5IICJJHg7m.....K7.........",
+        "........KkjK.....67QLICJVVCIIPR5IIkjikjIIWfMQlm.................",
+        ".........KK.....K77gWfJCIWIjkRjIIikjjjkLCIIfL7m.................",
+        "................7jLICVfMgkkkkR5LkkihhhjgJJJVWj8m................",
+        "................6gCfJCfJRjihhikkjihhhhhkgVJJLWgm................",
+        ".................lQQgJf5khQ7QhhhhhhQ7DhkLIggJIQm................",
+        "..................61JVf5kQDgQQhhhhQ7kQ7kL5gggH7.................",
+        "...........88887..8LJCfLkkkhjjhhhhjjhjkk5kjk17mw78887...........",
+        "..........7keIIj7w7IQ5IQRPPihhiiiihhiPPkkgg76wm8jII5g7..........",
+        ".........7gIWWIfg7677LWf8jPihhhijhhhiPjRQfg6.m7fCIIIIg6.........",
+        "........78LIIfVICH7wwlICQ7jhhhhhhhhhhj8QQ5Q.m75IIfCIIP8m........",
+        ".......KR5ICVJIWWWL766QLgg7778kjjkg777gJ7767QIIIWIJVCW5Em.......",
+        ".......6gCVVFFICLIICHQQ6717kO98kkR8Ok817l7gfIWIfLIFFffCQm.......",
+        "......7RgfCIfFFFFCIICVVg779dGc9999YSSO87gVVCIIfFVFFfICfgE7......",
+        ".....mRIWWIfCICCFJJJJVJ77L5kOdOkZ9dYOjLQ7gJJJJJVCCICfIIWI8m.....",
+        "....w8PIIIVfIIIVfCVVQ77jWIW5k99je999LIIWL77QJfCVVIIIfVIIWP7.....",
+        "....mEIWCJFIIIfFICfQQLiuhWICgRWWWWi8HIWeuiLQQfCIFCIICJJCII8.....",
+        "....8jWCVgHIIFFV5777RkeSSWIf089jeO9DQCIGdWkR77Q5FFVIIggVIIk7....",
+        "....85CfQ7gCJVCVH7hihijechCzUfRke99f1gCceijhih7HFCVJLQ7gfIj7....",
+        "....75fQ7gfgFIWLg7khijEIciQUBP99k9kiBDLbeRjihk7HCIIFgfQ7QLj7....",
+        "....7Q768LIVCWIVfH7l711IYkDUTjOggfkjTUQse17767HVVIWCfIj767Q6....",
+        ".....mw6kWWfIWCJIfJQQVJIODUBCSuICCuSLUDOeJVQQJfIJIIIfWWgmm6.....",
+        ".......7jWIVIILgWfVQQffh9UUTWSuWWIuSWTU8iLfQ1JCWQCWCfIWk7.......",
+        "....KQ.7jWfCI5QQICg88gk9UUBCecuWWCuYZCUU8kg88gCIQQCIfCWg6.9.....",
+        "...77kw7gIQLILlQCf7as87UUBFWZcWWICIciWTUUz8Oa7fC7l5IfQIQmKk9....",
+        "...Kk8kK7Q7LIg67g7kuY8UUBTCeuYWICCWYuhfBUU8Ydk7g76gIL7Q77k7k....",
+        "....8kK.Km7LCl.ml9dS9DUBBFWZsjWIIIWiOiWTBUD9Sd8lw.7Ijlmmw7kK....",
+        ".....KK...6Qg7.m8Yc7DBBBTIhcOIWWWWWIOYhCBBBD7cO8m.7j8m...KK.....",
+        "...........77..79t86BBBBLSYOkWWWWWWWjOYiFBBB68t96..77...........",
+        "..........99...7O86gTTTTi99OkSeWWWhSk989fBTTg6997...............",
+        ".........8Gi7..68l7jhWWek7gjSudSSSduSL19jWWej7l86...............",
+        ".........OhhO....6jGYYYYk7gLeIdccuSI5f1RkYYYiL6...QkK...........",
+        "..........k9.....7k5ehZGf1768k5III5R8l7gLGZe5k7...kjK...........",
+        "..........KK......7QjjLj77w7ik8l678kkmw7QLLjQ7....K7............",
+        "...................m7777m.w7hhi76kihk6..77776...................",
+        "...........................7Rkk7m8RR8m..........................",
+        "............................667w.m6mm...........................",
+        "................................................................",
+        "................................................................",
+        "................................................................",
+        "................................................................"
+      ])
+    ];
+
+    const ANGEL_3_FRAMES = [
+      make64([
+        "...............................KK...............................",
+        "..............................w9OK..............................",
+        "..............................KSS7..............................",
+        "..............................8GG9..............................",
+        "................wk7........w8OOeeYO8w........K8.................",
+        "................8GSK.....KK8deeWWeed977......kG9................",
+        ".................9K....79SS99kkeekO99SS97....7jK................",
+        ".....................KYSeGiY999iG999OSGhSOK...K.................",
+        "....................7SeGu887..7dd7...88uieS7....................",
+        ".............7K....7iek8K......OOw.....K8Yei7....9K.............",
+        "............7SuK..KjekK........77........6kIkK..8ikK............",
+        "...........7Seed..9ekK.w.....m8Gi8m.....w.Kke9..kvkK............",
+        "............9GS7.mdG8.mkk6.m8kddkuk8m.6Rk6.8idm..kK.............",
+        ".............97..6Scm.7iIk7OddYkkYuuO7kI57.KYS6.................",
+        "................K8Su7.m85Wi8999jk9998jW586.7ki8K................",
+        "................7SvGdKw8LCkkikdHHYkikkCL9w.uGvS7................",
+        "........798......6uOm.w8CkOYOOQTTQOOOOkC8w.wOu6.....w997........",
+        "........8SkK..wm.wOY7..7Qj8QQ7OQQO8QQ8kQ7..7cOm.mw..6kS8........",
+        "........8uGkw.gI7.8cO67fgDHICfQOO7ffVf1gf76Yc8.7Ig.mkSc8........",
+        "........8cZIgmLWD..9c9QCQLWICCLQ7LICCCfQfQ9c9..7WLmkWGb8........",
+        "........7OSWW9fWjK..78QgLICIWWIfCIfgCCCfgQ88..KHWf9WWdO6........",
+        ".....ww..7YeW5JIWLK.zK0gCCCCIIIfIIHgfICIH1Qz.KLIIJhWec7..ww.....",
+        "....m9k6668dWWfJIW5KQLgfIVIVCCJfCCPiHICfIII07CWIJfWWS8l67k9m....",
+        "....6dduuukkfCVfJCWHzfCCJCCgggPCLgihPCIfgg1xLWCJfVCLkkuuudu6....",
+        "....6YcGWWWWIfJWIVIfQgQgCIfjiPJJgihhhgLIfHg0LCVIWJVIIWWWGcY6....",
+        ".....7OueWWWWIVfCIHQICfICHkhhhhhhhhhhjgffVCCgfICfJIWWWWeuO7.....",
+        "......79ueICfVVJVIgHCfJgggjDgQjhhiQgDjgJQgfIHgIVJVVfCIeu97......",
+        "......m68RVfWWIVJCHQC1QgffjkQghhhhgQkjfCgQ1fggCJJIWWLfk86m......",
+        "..m788ucYYfJCIICfQQ0gggJfIgkjhhjjhhjkgIfggggzQQfCIICJJYYcc877w..",
+        "..7dddSSeWIVMJffQ5WLgHCVQLWgjhhhhhhjgILQJCHgfWCQfCJMVIWeiSddd7..",
+        "..7uSWWWWIfCIIVQLCfLCCCgVgCJ7m7jj7m7gCgJgCCCLf5LQVCICfIWWWeSu7..",
+        "...8OdShIVIWWIVDIg1gCfJffggD77QkkR77zggVfJLCg1gIQVIWWIVIhSSa8...",
+        "....78OORJJfJJCQfgQCCgICJg7kCkkjjkk5k7gJCIgLCQgfQCJJVJJkOa87....",
+        "......m8SICVVIIH1ggCfgCgQgYYGWhkHiWiYcgQgCHJCggQHCIVfCIj7mw.....",
+        "......8iWWIVIWCJHg0LfQfQ9ieidujFFHudSei9QfQVC0gHJCWIVIWek7......",
+        "....w8GWWW5HLfJfCVgKKDQQUDkkduYUUkudjkDUQQDKKgVCfJLCH5WWWk7.....",
+        "....9SGiSdRfJJfWCfzQjQLhCBUDz79kkO7DDUBChLQjQKfCIfJVHkSSGGd7....",
+        "...w9ddcO9jIIJIWfDjjjh8GGFUVDJ1991JDfUFGiQhijiDfWCJCIj9acdd8....",
+        "....777m7kIIIJfJJQQhhj7euICCDLgkjgLDfCIue7jhhgQVffJIWW977777....",
+        "........8hIIigVJCCQ77z7vuWIH1kGheGkQHCWcG7D77QICJVgiWWG8........",
+        ".......mkIeSOLIJIVQ7gM7ScCfDVjkjikjVDfIcS7MJ6QVIJCLkSeW9m.......",
+        ".......7uScOkIIJf1gHgJ7uOfDQCCgkkgCCQDHOu8JggH1fJIIkOcic6.......",
+        ".......7cO98CICzDLIf7f8Y7zUfIffOYffIfUz7Y8L7JILDDCIC89Yc6.......",
+        ".......687mkIC7DLWCJQ7Y7zUUIWff99CfWCUUz7Y8QJCW5D7CIg689m.......",
+        "......K...mLLDgIWCJVJzK0UBHWWfCucIJWWHUU0KzJVJCWIgDCjm..........",
+        ".....7dK..mLDgWWWVVCH00UTUCWekIuuIkeWCUTU00gCVJWWWgDjm...K......",
+        ".....dhk...6QeuSeCICg0UTTgdhSkWSSWkdhdgBTU0QCICISuhQ7...Kk7.....",
+        ".....Kc....m9uSdueIfDUTTQiecOHWkkWfOYhiQTTBDfCeddSu9m...9vdK....",
+        "..........mkSSSScSLDBFTgijju9IWeeWI9cjjiQTFTDfScSSSdkm...k7.....",
+        "..........8S98QQOOQQTFTQO98gJIWiiWWJg89OQTfTBQOYQQ89d8..........",
+        "..........7998JJQ9DFFTBUkugCfWhuuiWfCgukUBTFFQ9QJJ8998..........",
+        "...........78gCVQ7SSSLUQQ9gCfGuGGdiCCj9QQULSSS7QVCH88...........",
+        "............6gICQk978SSu9gCCCikSSOiCCIg9uSSQ79kQCIk7............",
+        ".............lQQ79DUU07ggIWfIWikkiWIfWCgg70UUQ97QQl.............",
+        "................m9YQQUDCVWWfGGejjIGGfWWVCQUQQY9m................",
+        "............7K...m9YODCCCWIkuudWWSuukIWCCCDOY9m...KK............",
+        "...........7S9....677gWCduc99kuccuk99cudLWg776...Kk9............",
+        "...........7ikw.....mOSYudY9879dd9778YSuYSY6.....9GS7...........",
+        "............7K......m8YO8mm69kR779kR6mm8OO86......98............",
+        ".....................wlll..mkijR8jikm..6llm.....................",
+        "............................7ihkkhh7............................",
+        "............................m898788m............................",
+        ".............................mmw.ww.............................",
+        "................................................................"
+      ]),
+      make64([
+        "...............................KK...............................",
+        "..............................KOYK..............................",
+        ".................KK...........7Si7...........Kk7................",
+        "................KkkK..........8GG8...........8G9w...............",
+        "................KkkK.......m9OOeek99m......K9SWS97..............",
+        ".................KK.....K889SeeWWeeS988K...7deWeS9..............",
+        "..............K.......K9Oii999keek999iiO8m..m9Wk7w..............",
+        ".............mS7.....8uieiSO999GG999OSieiu7..7d8................",
+        "............7kej8..w9ieic87K..7dd7...78cieS8..K.................",
+        "............Kkek7.w9GhO7.......99w......8OhG8...K...............",
+        ".............wuK..7SeOK.......mkkm.......6YeSK.Kk9..............",
+        ".........mm.......cekK6kQm..m7kGSY7m..mQg6Kke9.KSk..m6w.........",
+        ".....KK.m9k7.....8Si8.75Ik78kSu9kudk77kI5l.8iS6.KK.m9u8.........",
+        "....797wmkd8.....8SYm.6kIWj9YY9jd9YY9jWIk6.mYS7....mkd9.K97.....",
+        "...K989KmOdkm.m.K9SY7.w8fCj9g9dgQY8g9jCf8w.7YS9Kwm.7Sd9m9897....",
+        "...879..mOGe88I69iehdKmkIjOcccQFFQYccOkIkmKdZei87I79eu9ww899K...",
+        "....9K..mOdWHLWm.8uOm..7Qk91Q7OQUO71D9kg7..mOu7.7WgLWc9w..97....",
+        "....K777m7ueLfWQwmYc8.zJQQHCCVQOO8fVVg1QJ7.8cYwmgWVCec7m777K....",
+        ".....8uu86OGIVI57.8cY7gfgCIICIf77fCCVVfQfg8Yc7.75IVIi969uu6.....",
+        ".....8ciGd8jIVCWHm.998ggLCCIWWIfCIfgLCCfgg798.mjWffIk8SGSY7.....",
+        ".....8aSWWhkfVJIW7.wgQQgCCCCIICVIIggfICIfQQQ.wgWIJVfkhWWda7.....",
+        ".....w8aeWWIJffVIC6.DIIIffIgffgfICgggIIfIW57.7ICJfVJIWWha8......",
+        "......m9ceWWCfWIfIgKm0ggfILgggfCfgiLgLICgg0w7LIfIWJCWWhc8w......",
+        "...m77769iCfCVVIIffQHJHLICgQQQgggigQQgLICfggQCfWIJVCfCi86778m...",
+        "...8dducO8JfCfMVfCQCIfVfJQ7zgDjihiDgzK1gfJVILQfLVJfCfJ8Ocudd7...",
+        "...8cSvZGiJJWWfCCV1ff1Q1Jg7g77hhhh77QDQV1QQHC1fILfWIJViGZvSY7...",
+        "...m9YZWWWIJJCCVJVgQJ1QgIgkjckhhhhkcjjgIgQ1gf1VJJICJVIWWWGb8w...",
+        "....69YuhIVVfVVVQQQ71QggCCgPihhRRhhiPgCCggQQ7QQQfVVffVIhuY9m....",
+        ".....m799fJWWWCQLWWILfVJQfIgihhkkhhhgILQgVfHCWWLQCWWWVf997w.....",
+        ".......m9jJVLffQIgQgCCfgVgff1QjhhjQ1ff1JgfCCgggIQffLJJk9m.......",
+        ".....m7kiIIfJJVDC11fIH5IVgg1777jj7771ggVC5gCf11CDVJJVCIikK......",
+        "....w7SeWWWCJLCgQfgCfgIgQD8k5jkjjkk5k8DQgIfgCgJggCLJCIWWej7.....",
+        "....mOdSSSPJIWIVQ11VJQVQ8iicueeHHveuYii8QfggCQ1QVIWCJjSSSd9m....",
+        "....m9OO98ffVJJVVV1QQDQQDkSvSckTTgcSvSkDQQDQQ1VVVJJVff89OY9m....",
+        ".....mmm7LWICJCICgDQjg5hCBDQkOYQQY99Q1BfGIgHQzgVICJCIWL7m66.....",
+        ".......7iWWIffWCJDhiihkhSfUUD189981DQUFiGkhhihDJCWVLIWWj7.......",
+        "......m9eWiuRJJJfQQhhk85dCfCQVgkkgVDCfCde7khhQQfMVJRuGWe8w......",
+        "......m9ScO8CCJCCV1w7QQjdhIfDjkiGkkDfIeui1g7m1VCfVC58OcS9m......",
+        "......m9Y8mgIIJCH1zDQJgkc5CDgkkiGkkgzL5YkQJQDzQHCJIIg68Y9m......",
+        ".......66.mjICDzxmgCDfgOOfD0CCgkjgLC1DfOYgfDCgmmKDCIgm.ll.......",
+        "..........6jIQ.w7LIVQQgO8DUQIfHkkgfIHUD8OgkQfILDw.gIjm..........",
+        "..........6jL7wQIWCJV1970UUCWff99LHWIUU0791VJfWWgw75jm..........",
+        ".......7K.w87wQIWCJfVMNUUBgIWHCucIgIWHUBUyMVVJCWIQm78w..........",
+        "......7Sk....7ehIVCCf0UBTUCWekIddWkhWIMTBU0JfCVehh7.............",
+        "......Kk8...7dccSIIfQUBTBkddckWSSWjYSdSQTBUDfIhccukm...Kw.......",
+        ".......w...7ddSSchCQQTTTHIIdOfWkkWC9ueeLBTTBQCSudddk6.Kd9w......",
+        "..........m9O9QkuYgQTLFgk989gIWhhWWg989kgTCTQQOcQ89O8.9GdK......",
+        "..........m999Mg9ODTTTTUOcgVVIWkkeWVVgccQBTTTDO9JJ997..9K.......",
+        "...........m8gCVQ7SSSHUBQ9jCfekSSkhCCL9QBUHSSS7gVC97............",
+        "............mkICQk98kSSdY95CCjkGGkkICIkOuSSk79dDCL7.............",
+        ".............6ggQ90U0D7QgCWCIWjkkjWIVWIgQ7z0UDO77m..............",
+        "..............wwl9OQUUDCfWWVeeWkkWevLIWCCQUUQO9m..KK............",
+        "............K7...79a9DLCCWIkccSWWicuu5eIfCD9a9m..Kk9w...........",
+        "............8Sm...787gW5ucYOkuuuuudk9OccjIim6m...7SdK...........",
+        "...........OheS7....lOcYkkO8789ddk7789kkOcY7......77............",
+        "...........8jh9K....68OO9lm68jR779jQ6mm89986....................",
+        "............7d........mm6...9hjR8jhQw..mmmw.....................",
+        ".............K..........k...ljhkQhj6..mk........................",
+        ".......................wk8K.w898787..78k........................",
+        "........................897..........Q88........................",
+        ".........................Q7..........Q7.........................",
+        ".........................KK..........KK.........................",
+        "................................................................",
+        "................................................................"
+      ]),
+      make64([
+        "...............................KK...............................",
+        "..............................KOOK..............................",
+        "..............................KSS7..............................",
+        "..............................8GG8..............................",
+        "...........................w8OOeeOO8w...........................",
+        "................7K.......778deeWWeed977.........................",
+        "...............7j9K....79SS99kkeekO99SS97.....7K................",
+        "...............ueG8..7OShiiO999SG999Oiihik7..7ik................",
+        "...............Kk8..7jeic887..8dS8...88ciej7.Kj8................",
+        "................Kw.8ihO8......w9Om.....w8Ohi8.K...w.............",
+        "..................KkekK........78........mkekK...wu7............",
+        "............9.....9ekK.mm....m8GG9m....mm.Kke9..K9vd7...........",
+        "...........9h9...6ui8.7kkl.w8kukku98w.lkkl.8idm.8iehu...........",
+        "...........Kkw...7SY6.75Wi89uuOkkOuuO8iW57.mYd7..7iOw...........",
+        "................K8SY7.w8LWL8999kk9898iWL8m.7kS8K..97............",
+        "................8ShZdKm95fkkiYkFTkOikRf59mKuZhS7................",
+        ".................luOm.w85jOYOOQTTQOYYOj58w.mOu7.................",
+        ".................mOY7..11P81Q7OQQO7118P11..7YOm.................",
+        "..............w...8cO77CgDfICV7OY7VVVH1gC77Oc8..................",
+        ".............7dK...9tOQfQCWICCf77fCCVCCQfQOc9...................",
+        "............7SekK...791gLICCIIIVfIfgfCCfgQ97....................",
+        "............9iej7...770QfCCCIIIVIIggfICIg0D7....KSK.............",
+        ".............8Sm....QLgLIVCVCCJJCCkjgIfLIII7....8G9.............",
+        ".............K7.....mgCLJCCggggfCggggCIfJfQm.....7..............",
+        "....................DQ1gLIJkjPJJgihhPgCIfgQ7....................",
+        "...................QICVICgkihhiihhhhhkgfLVCC1...................",
+        "..................wHCfgQggkDgQjhhjQgDkgg1gfCfw..................",
+        "............w7QQ7mwgf11MffPkQghhhhgQkPf5MQ1fgwm7R97.............",
+        "...........w9IWIL16zgggJfIgPjhhjjhhjPgIfJggg76QLIW58............",
+        "...........mQfffQ5I5ggVV1HIgkhhhhhhjgIH1Vfgg5I5Qfff8m...........",
+        ".........w7kjCfD55HfLCLgJg5V7m7jj7m7JCXJg5CLff55DfLjk7..........",
+        "........mkIWWCVDCg1gCff5fgg077QjjR770ggVfJfCg1gCDVCWWI9w........",
+        ".......mkIWIfCIQHVQCLJIfJ17k5kkjjkk5k7QJfWJLC1VgQIffIWI9w.......",
+        "......w8cuO8fWfCDD1CJJCQ7jSYSWhkHGWSYukQQCVJC1DQCfWV9Ouc8.......",
+        "......7Y989fVVMJJV1gV1gQ9khvdckFFHcdZhj9QgQVg1VJJMVVH989O7......",
+        "......mm7OhCVJfWIVJKmQgHBUD9ucYQQYcukDUBHgQmKVVIWfJVChO76m......",
+        ".....K.7SeWIfCWIVgzQjkLihTUUz09cc97zUUTCiLgjQzgVIWfLWWek6.K.....",
+        "....KQwkeWWfJWCJLQiiihkeSfMCDJQ99QJDLTfShkhjiiQfJCIJCWWe9.QK....",
+        "...7QKKdeZkJfJMfIgDiig7ISeIfDLgkjRPDVIeuW7giiDgIVMJfJkhhuKKQ7...",
+        "...QkK7duOgCIVJLCVgDz11idhCgQkGeeGkQgCeuS11zDgVCfJVICkOuu7KkQ...",
+        "...Q977988IWIJfVJVJQQJQkY5gzVj8kj8jVDH5Yu1JQQJVJVCJWWI889779Q...",
+        "...K97wm7iWWCVCJVCgQDVgYOgDQCCgkkgLCQDgOYQVDQgCJJCVCWWj7mw79K...",
+        "....K..7ceWefCCQCHDfQQ9Oz0UfIff99HfIfU0zO9gQfDHCQCCgeWec7..K....",
+        "......mOSWekjCfmQQIJJ18zUBUIWfC99CHWIUBUy8QJVIQQmCCPkeWG9w......",
+        "......mYvZY95CQKLWVVVX0UBBHWWgIuuIgWWHBBU0MVVVWjmgCC9YZvYm......",
+        "......9uuO6HCHD5WfVfJ0UBTUIWIRIddIkeWIUTUUUJfVCWL7HCg7Ouu9......",
+        "......9cO6mfLQhheCIVQUBTTguidkWSjWkdiugTTB0QVICehhQLgm6Oc9......",
+        "......887.mg8kuuchIHDBTTgZWuOfWkkWfOuWZgTTBDfIhcuuj8Qm.788......",
+        "...........7YdSSuufDTfTQjk99QCWeeWCQ99kiQTfTDLcuSSdY7...........",
+        "..........muk918YY7BTFTUOY9JVWWiiWWVJ9YO1TFTQ8YO889Ykm..........",
+        "..........69O9JJ18QiiHBUQOkCVWiuuiWVCkYQUBFiiQ81Jg9O9m..........",
+        "...........79gCCgQdkkSHSY9PIViYvvYifIP9YSHSkkdQgCCk97...........",
+        "............mQICQ9D008998HICCIjkkjeCCIH899800D9gC5Qm............",
+        ".............m8Q79OQUUzVVIWVeIWjkWIWVWIVVzUUQO9788m.............",
+        "...........K7....6OYkDfCCWIkccSWWScckIWCIfDkYO6....7............",
+        "..........KSi7....798gICjddOkduuuudkOudjCIg897....7S7...........",
+        "...........8kK......mYGjdSc9789ddk878cSdkGcmw....KdWSK..........",
+        "....................69cY9676RjR77RjR6778Yc96......md7...........",
+        ".....................m887..mkhjQQjhkm..788m........K............",
+        "............................7jhgQhi7............................",
+        "............................w77ll77w............................",
+        "................................................................",
+        "................................................................",
+        "................................................................"
+      ])
+    ];
+
+    const ANGEL_4_FRAMES = [
+      make64([
+        "...............................66...............................",
+        "..............................KOYK..............................",
+        "..................K...........8dS8...........K..................",
+        ".................9uK..........8GG8..........Ku9.................",
+        "................KcS8......mmm7OGGO7Kmm......8SYK................",
+        ".................K8.....78OYuSieeGSuYO88.....8K.................",
+        ".....................w78udvuuZveevZduvdd98w.....................",
+        "............KO......m9uSeGd989YGGY989dieSu9m......YK............",
+        "...........wOi8....7OvhSO9mK..8GG9..wK9OSZZO7....8G9............",
+        "...........thWS9..7khSO8......8SS8......8OShk7..9SWGY...........",
+        "...........7kh9K.Kued9K.......wYcK.......K9deu6.K9eYK...........",
+        "............7Y...9Zd9w....88..w88w..78....w9dZ9...tK............",
+        ".............K..mYdYm....7hkm.7kd7.wk57....mYdY6..K.............",
+        "...............8YSSO..6m.lcG7mOLLOm7Gc7.m6..OSiY8...............",
+        "...............OSeeS9mkkmm9cSkiTTikjuOmmkkm9SeeSO...............",
+        "........m6w....K9Su8wm9ig6YcuSHTFHSucY7gG9mw8uS9K....w6m........",
+        ".......w9Y7.....7cOm..7bSGY879uBBd988YSSb7..mOc7.....7Y9m.......",
+        ".......w9u9w.87.7uS7..mOO9OdkQ9Sj97kSO9OOm..7Sd7.78wm9u9m.......",
+        ".......w9GSOljjm.9GkK.w99Y9DQfg99QVQ79Y99..KkG9.mkj7OSG9m.......",
+        ".......w9uei95egm6OG9K.8O8gLCIV99JICLH7O8.K9GY7mge59ieu9m.......",
+        ".....ww.7bZWhfWWL77Yic778fICWCQiiQLWCIL876ciY77LWWLhWZt7.ww.....",
+        "....6997m9SWWVIIIID7OS8QQWfWIQ9ii9QIWCIgQ8SO77IWIIVWWS9w799m....",
+        "....7uccO8OeWCVICICKm8KQIfIIHgj99kggIIfIgK96KCICIVCWeO8Occc6....",
+        "....7cShSuOjIIJJICWQwQICfCIfQihkkhhQfIIfCIQwQWCIJVIIjOdieSc6....",
+        ".....7OSWWWeCffCJCIQmLQQffgQihhhhhhiQgffgQLmQICJCff5eWWWSO7.....",
+        "......7YSWWWWIJCIfCLmgKfgLgggLjhhjLgggCgfKgmLCCCCJIWWWWSY7......",
+        "...888779d5I5VVMfCCIgKDIgWHkQQjhhjQQjgWgCDKgICCfgVf5IId977788...",
+        "..6ccuuuYRkgfCCVJJQQQDLLHLIQihhiihhigCCgfLDQQQHJVCCfgk9Ocuuccm..",
+        "..mYueWWWWILfIWIQQCIICfCCQIHghhhhhhggIQfCfCIICQQIWIffIWWWWeucm..",
+        "...8YueWWWWIVJVgHICLIIIIgJQLgDgjigDgLQJgCIIILCIHQVVfIWWWWeuY8...",
+        "....7OcGhhL5IIfDCfDD1QQgffJQDzKkkKzD1JffQQQQDDfCDfII5LhhGcO7....",
+        ".....m79Oki5LVfDfgDLzQVCCVQQu9LSdLQuQQVIIfQzLQQfDVJf5ikO97m.....",
+        "..6ll9OcZWW5V5CHQLfLQCICJQD9iSkHHkdG9DDJCILQLfLQHCCV5WWZcO9666..",
+        ".m9cYcieWWiPIHDQQDDQfJfJDjL9hSfFFHSh9Lj7JJfVQDDQQDHILiWWeicYc9m.",
+        ".m9ctShhSkkIggIWIIIIHgQQgQgk99kBBk99YgQQQQggCIIIWIggIjkSZhStc9w.",
+        "..m89YaO9OeHgICggCLDggQhiIfQ779jj977QHIiZQggDLfgHCIgHIO9OaY99m..",
+        "....m766OZhDIVgDCCDgjhjkdWCCgD1990DgCCWukjhjgDfC1gVIDhGO667m....",
+        "......m9cdO7JLzgCJDkij79ceCCQQg9OggQCChc97jikDJCgDCJ7Odc9w......",
+        ".....m8ccc9jDLDDQHfQzz09cSIHQJkiikfQHISu90zzDfHQDzCDj9Ycc8m.....",
+        ".....8ccY9hG9QgDHVfDUD09YhLDVC9kj9LVDfhY90DUDfVHDgQ9Gh9Ycu8.....",
+        ".....799mOeut7DfVCQ9UDD9OIDHJHgkkgHffDIY9DDU9QCVfD8cueO6997.....",
+        "......wwmudY7DCCfC8gUUD9ODgfIQfkkiQIfgDO9DUUg8LfCCD7Ydumww......",
+        "........mta7QCCICQYQUUDY8QfCLUCOOiUfCVQ7YDUUBYQCICCQ7Yc6........",
+        ".....w..6Y7gIfICIDcuBUU7QLCIHUhddGUgILfQ7UUBkcDICILIQ7Y6..K.....",
+        ".....99..6QW5IICIDDQckUQCCCWUUGSSGBUICCCQUkcQDQICWC5ID6w.9Ow....",
+        "....7ddK.7I55WfIgUUUUQgCIfWHUTGGZGHBgWfICgQUUUUHICW55I7.KdS7....",
+        ".....77.75ikICVLDBBUUHIGdLIUTHGGZGHTUCLdGIHUUBUDCfIIkih6.77.....",
+        "........9kiuekgDHJTUfehSuhgUTfGGZGfTUQhuSheLUTJMQgkeuSu9........",
+        ".......w8heYc7KHJJQLhkSSeHUBTfGZhGfTBUHeiSuhLQJJHK7cYIh8w.......",
+        ".......6CWSc9mQIJQCCkhe5QUBTTLSeeSCTTBUQ5eekCCgJCQwOcSW57.......",
+        ".......6Ciac8KCCgLWek998UBBTBIvddZITFBBU899khWLgCCm8cbG57.......",
+        ".......6uYYc7QI5fQghYOYDUBHHgWGuuGWgHHTBDYOOhgQf5IQ7cYcu7.......",
+        ".......6Ycc86jC5VgQ9OuQQHTHdgeYiGcegdHTHQQcO91gV5Ik68ccY7.......",
+        "........7uOm7ui5VQjGSkDQHHuHfdSduSdfHuHjQQkSZLQV5ic8mYu8........",
+        "........8u7.7885gHWIDUUYuuHMCcSduScCMHuucUUDCWHg5887.7u8........",
+        "........m97..m.7Q5iOQFTUHTVHWecuuceWHfBHUTFQ9j5g7.m..79m........",
+        ".........m......QVPOkQUQVVC9uZeucevd9LVVgUQkOPVQw.....m.........",
+        "............KO..mQSSYO7CCIL79YSZZGY97LICC7kYSSQm..OK............",
+        "...........KcG9..m89cO8chZO8O99SGO9O8YZhu99ck8m..9vY............",
+        "............7cK....mmm7cccY8Shk9O9hj8Yccu8mmm....Kc7............",
+        ".............K........m8888w7khkkhk8w8888m........K.............",
+        ".............................l9Gv97.............................",
+        "..............................w99m..............................",
+        "...............................mm..............................."
+      ]),
+      make64([
+        "...............................66...............................",
+        "..................99..........KYYK..............................",
+        ".................7Sk7.........8SS8..........7K..................",
+        "................7dWWuK.......w9GG9w........7S9..................",
+        "................w8Sk7.....7789YGvY9877.....Kd8...K7.............",
+        ".............7w...98...w88YYSheeeeZScY88....K....8u6............",
+        "............7S9......m89SSeSuSSheSSudeSd98m.....Oied8...........",
+        "............7S9.....7OSZhSO978OGZY979YShZSO7....8keO7...........",
+        ".............7w....7YhGd98m...8iG8...w89uGhY7....7cm............",
+        "..........77......7uhdO7......7ud7......7Odhu7....K.77w.........",
+        ".........8c9.....muWu9....87..w99m..78w...9uec6.....9Y8.........",
+        ".........9t9.....9id9w...7Gkm.7SS8.mkG8...w9Si9.....9t9.........",
+        ".........9SOm...8YSYm.6m.7YS8mOLfYm7SY7.m6.mYSY8...wOd9.........",
+        ".....7kK.9Zc7R88dGGY7mkk6m9tSdLFTLdSYOm6kkm7YGGd88R7cZ9..kQ.....",
+        "....QkkK.9GG95R7YiZS9m9Sk7YYYuHTTHuYYY7kS9m9dZGY7R59GG9.Kk9Q....",
+        "...Kkk7..8SWkIim8uc7..7adSO9kkcTTukk9OSSa7..7cu8mjIkWS8..Kk97...",
+        "...Q8Q89m7cW5LI77Yd8..m9O9YY9D7uu819kc9O96..7uc77IC5Wc7m9879Q...",
+        "...KQ79uO7OeIVWj6OvYm..89Y8gfCV99JCfg8O99..mOGO6gWVIeO7OuO6QK...",
+        "....KK9SGc8iWVCWQ7cZ9m.8OQCCIIgkkgCICCQO8.m9Gc7QWIVWi8cGS9mK....",
+        "......7teWSkIIJCIQ8cGY777CCIIgueeugIICC877YGc8gICJ5IkSeet8......",
+        "......m9SWWhVJMCCIQ7Yd7QLCCWfQQkdQQHWCCfg8SY7QICIgJVhWWS9m......",
+        "...898m7OZWWLfCVICIK7QgLCfILgii99iigLILCLQ87mICILLCfWWhY76898...",
+        "...8uuc98OhICHIffCWK7IfVCIfDKDjjjjDKDfILVCL7mICCVIfLIek89cuu8...",
+        "...8YShGuOOVVJfICVIQQgKJgJDD7gkhhjQ7DDJgg7L7QIVLWfJVVkOuGeit8...",
+        "...m9ceWWe5VWIVJICVIDgDfgIQHOYihhiYOjQIQf7gDIfCIJJIWf5eWWec9m...",
+        "....w9chWWWffIIJJgQQHKQCgILkjihRRiiikHIQC77HQQHJJIIfVWWWhc9m....",
+        "......8OkjfVVJfCQHICHHIVfHWQihhkkhhiQWgfVCgHCIgQCfJVVVjkO8......",
+        "...6mm8OOYLWWIfQLCfHICCIfQHIQghhhhgQIHQfICCIHfCLQfIWW5kOO96m6...",
+        "..7ucYcSeW5VfVJQfgDQ1gHggCMQgzxRkKzgQgCgHHg11DgfDJVfV5WeScYcu7..",
+        "..7ctSeWWWIfVCCQfQDLDgHCIVgD97gkkkD9DgVICHgDLDgfQCCVVIWWWeitc7..",
+        "...8YtdGGkP5ICgQzHLQHfIfQDDkhu9Lf9khkD7QfIfHgLHzQgCI5PjhGdtY7...",
+        "....m9O99jIWfQLCLgQgJVgQQLS9jifFFfii9iLQQgfJgQgLCLQfIWi99O96....",
+        "......m8iWeLQCCLLCCQQQQkLggk99jTBj99dggfkQQQQCCLLCCQfeWi9m......",
+        ".....m9cSuO8LVgDggQQjhkjSWfQ879Sj978QfWSikhiQQHgDgVL8OdScO6.....",
+        ".....9uuYOjgHfzHfHQiij79uICCg019911QCCWu97jhiQHfHDfHQjOYuu9w....",
+        "....7u987iWCQLDQfggDzz09cG5CDMgkkgMDCIic90zzDggfQDLQCWi789c7....",
+        ".....6w6cWeu9QgDQVVQU009YjCQgfkhhkHgQCSY900UQVVQDgQ9ueWc6w7.....",
+        ".......9iScO877gVVg9U009a5gQJLQkkQfJQg5Y900U9gVVg778Ocii9.......",
+        "......w9ca867LCCVL7gUU09OgzffQHkkfQfVDgO90UUg8LVfCL768ac9.......",
+        ".......9O7KgI55ICQcQUU0O8zJCCDL99hUCCJD8Y0UUQcQCC5CIgm7O9.......",
+        ".......87mgW55WCIQkcHUU80HfIfUhkkvUHIfJD7UUHckQICW55Wgm88.......",
+        ".........khjfWCIH1UDkkUUfCCIUUGiSGUUIICfQUkkDUUHICWfjhk.........",
+        "....wkK.lYkjIIVCDBUUUDHCSfWHUTihhGTUgWVi5HDUUUBDCVIIjjY6.KYw....",
+        "....9vu.mkWSh9LDJTJUQCISSiCUTHiehGHTULiSSICQUJMJDfkhdWj6.uv9....",
+        "....wkK.QIecY77fVVQgIikSSCUUTfiehGfTUULiSkiIgQVVf78YceWR.KYw....",
+        ".......mLWdcOmHIJQHIjiWegDUBTLSeeSLTBUUHeWijIHQJIgmOcdWL7.......",
+        ".......6Lubc8QW5gCWhk9990UBTBChiSvCBTBUU999khWCg5WQ8cYuL7.......",
+        ".......6utuY6jIVfQf5OOaDUBHHHWZuuvWHHHBUDaOOefQfVIj7Yutd7.......",
+        ".......m9cu88O55VJ19OcQQQTjdgecGGceHdHTQQQcO91JV5hO88uu9m.......",
+        "........7uO6Yc9eVQjhSkQkHHdgfdSSdSdfgdHHQQQShjQVe9YO6ku7........",
+        "........7u8.98mkQLWhQUUkuuHMCdSSdddIMHdukUUQhWHgkm89.8u7........",
+        "........m97.w..6QfjOQTTUHTVHeWdduueeHVTHUTTQOPfQ6..w.89w........",
+        "................855kOQ0JVCL8cSWddWSc9fCVJ0QOk558................",
+        ".................6OucO8GIWL18OueedO81LWIh8Ocu97..7..............",
+        ".............99...m8889YudO8Sk9uu9kS9sddY9888m..7S7.............",
+        "............7SS7......m9OO969vi99ih9m9OO9m.....KSeSw............",
+        ".............99......Q.mmmw.m9GiiG9m..mmm.Q.....6dm.............",
+        "....................wkKD.....m8iG8m.....Dmk......K..............",
+        ".....................QKg......w99w......k6Q.....................",
+        "......................Kg.......mm.......gm......................",
+        "......................KQ................QK......................",
+        "................................................................",
+        "................................................................",
+        "................................................................"
+      ]),
+      make64([
+        "...............................mm...............................",
+        "..............................KOOK..............................",
+        "..............................8SS8..............................",
+        "..................QK.........w9GG8..........KQ..................",
+        ".................7ik......6668OGvY8666......ki7.................",
+        ".................Kd9....88OOciGeeGiuOO88....9uK.................",
+        "..................K..m79uSeduSGeeGSuuedu97m..K..................",
+        "....................m9uGeiY979YZZY979YieGu9m....................",
+        "............K9.....7OZZS99K...8iG8...K99dZZO7....w9w............",
+        "...........K8G8w..7khSO7......7dd7.....w7OShk7..K8G8K...........",
+        "...........7SWS7.mueu9....ll...99...6l....9uecm.7SWS7...........",
+        "............7u7..9Gd9m...6jkm.lkkl.mkj6...mOSG9..7d7............",
+        ".............7..6YSYm....6YG8w9LL9w7GY6....mYdY6..7.............",
+        "...............7YSiOK.8Qm.9cj9iTTi9jc9wmR8.KOGSc7...............",
+        "...............8dZhS8.9ikm9tcSHTFTSctO6kG9.8Shvu7...............",
+        "................8uu8..6YSiY98kdBBd999YiSY7..8du8................",
+        "................7cu8..69OOOckQ9SS9QkcOOO96..8uc7................",
+        "................mYeOw.w99Y9QgCg99gCgQ8O98...OhY6................",
+        "............KK...8cZ9m.8O8LCIWJkkgIICC8O8.m9Zu8...KK............",
+        "...........Kdk....8uGO678LCCWHkvZkHWCCC877Oiu9w...kdK...........",
+        "...........Kk9.....8YS8ggIVWLQ9dS9QCWfIgg9SY8.....kkK...........",
+        "............KK......78QHIVIIgji99ijgIWVIgQ97......KK............",
+        "....................6LCVVICgkhhkkhhkgCIVfIj6....................",
+        "....................7L7gHJQkhhhhhhhhkQJHg7C7....................",
+        "............w78gg7m.mHDfQCggDQghhgQDggIQf7Hm.m8gg87.............",
+        "...........7k5WICCgK.mDCQILkjjhhhhjjkLIQC7m.7HCCIW5k7...........",
+        "..........8hWIVVgQQQQgIVfgWQjhhiihhjQWHHVCgQQQQgVVIWi7..........",
+        "........w69YkJCHgCIIIILIfQHCQghhhhgQCHQfIfIIWICgHCgkY9mw........",
+        ".......79cShfCIDCfDDQfLfgfMQgzKRRK0gQMfgfLfgDDfCDIC5Zdc96.......",
+        "......7OuvWIVIVDVQDHDQgfIVgD8DgkkkD8DgVIfgQDHDQVDVIVIWGuO6......",
+        "...77m9cuSjkCIVQQfgfQCICJQ7khcQjL9Yhk7QJCICgfgfQQVICkjSdc9.77...",
+        "...k.m9879kJVJMQQQDQfVfg8jj8jGLFFfij8kj8gVffQDQQQgJVgk9788..k...",
+        "..D77.w79SIfJfQCWICCggQQgQgSk9jTTj9kdjQgQQJgCCIWCQfJLeS96w.77D..",
+        "..Q87.7cSWWVfQICHgfQgQ9ZSWfQ979ii979QfWSZ9QgQfgHCIQCVWWSY6.D7Q..",
+        "..QkKwOSWWCVfgfgDfQQjijkShCVg019910gCCeSkjijQQfDgfgffCWWd9wKQQ..",
+        "..KQK7ueGdgIfgVDgf7jij88ci5CQMg9OgMQC5ic88jij7fgDVgfIkSGeu7KQK..",
+        "...KK9ucOkJCJDfQDgQ7zzz8cd5HQgkhhkgQHedc8zzz7QgDQfDJCJOOcc9KK...",
+        "....w9Y89GVVVJQQDgV7U0z8bSLDJCQkkQLJDLjY8z0U7JgDQQHVVViO8Y9.....",
+        ".....778SWWWVCVVVVQkUUz8ajDHVgHkkHQVVDja8zUUkQVVVVCVIWWS777.....",
+        "......mceWWLCCVCCgYQUU08ODgCCUL99hUCfgDO80UUQYQCCVICLWWeYm......",
+        "......9SWWikWfCfIDOcQU0O7gVCfUhkkZUHCVg7O0UQcODICCCWkiWWG9......",
+        ".....wOeeSOg55JICDUQYkU0gCfIUUZSSGUUICCg0UkYQUDCIVCCgOSeeO......",
+        ".....7uitO9fCIVCDBUUUDQf5VIHUBGhhGBUHIV5fQDUUUBDCVICf9Obic7.....",
+        ".....7cY89SWWC5QMBTBUgIiSjCUTHGhhGHTUCiSiIgUBTBMQCCWWd88cc7.....",
+        ".....6977teWIVL1VJJQHIiSuhQUTHieeiJTUQhuSiIHQJJVDLVWWec7796.....",
+        "......mm9SWedkgLVVQfhkheIQUBTfGeeGfTBUQCehjefQVVfgkdeWS9.m......",
+        ".......7YeWdO7gIVQCIjikkDUBTTLeZGeCBTBUDkkhkCCQVIg7OSWvOm.......",
+        ".......8ceSY78I5fgWIk9s9UBTFTIecceIHFTBU8s9kIWgf5I77YShcl.......",
+        ".......7cSc8mkW55gQ9OYYQBTdHgWdSiuegjdTBDYYO9Qg55Ikm9cSc6.......",
+        ".......7ucO69ceIVJQiScQ9HHjuHSdiSSSHuSHH9QcSiQJVIeY86Occl.......",
+        ".......mOu7m999eVQIWgUUYkukBfuGuuGuLBkukYUUgWIQVWk99m7uOm.......",
+        "........9ul.7mmkQC5OQTTUHHVgIecSSchIgVHHUTFQOL5Qkm67.7u8........",
+        "........69m....m6L5kOQUQVVC9uveuuehu9CVVgUQOk5L7m....m96........",
+        ".........w..K9...7udYO7hIWI09YGhhGc90IWIh7OYdu7...7...w.........",
+        "...........K9G8...l9998YSSu8uk9SSO9u8uSSY89996...7G8............",
+        "...........7SedK...ww.69cYa7kej99jek7ObY97.ww....9hk............",
+        "............7dm........m7l6.6keSSekl.667m.........Qw............",
+        ".............K.........7.....6OZhO6.....7.......................",
+        "......................8S8.....6OO6.....8i7......................",
+        "......................7d7......66......7dK......................",
+        ".......................K................K.......................",
+        "................................................................",
+        "................................................................",
+        "................................................................"
+      ])
+    ];
+
+    const SHADOW_FRAMES = [
+      make64([
+        "................................................................",
+        "................................................................",
+        "................................................................",
+        "................................................................",
+        "................................................................",
+        "................................................................",
+        "................................yzx.............................",
+        "................................02Xy............................",
+        "................................w022x...........................",
+        ".............................wxyy132x...........................",
+        "................w.......y..wz1223331x...........................",
+        "...............xgyw...w00ww0Xz00000yzx..........................",
+        "..............x15Xz..yX1xy0xx2333221xzzw10w.....................",
+        "..............yg5gz..11yzyz23311111221yyx1z.....................",
+        "...............ygyw..000z2320zzzzzzz122zzyx....w................",
+        "................w....y00221zzzzz0220zz220yx...xgy...............",
+        "....................x01220zzzzz0X2210zzX20zw.xg5gz..............",
+        ".............x01y..w0013Xzzzzz0X2222X0z0200x.x151x..............",
+        "............0X1x..wz11320zzz00X22222220zX20zw.x1x...............",
+        "...........wX0w...x1113Xzzz1222Xywww1220z2z0y...................",
+        "...........w0xx...y10320zzX2X00y011zw12201200w.w0X0y............",
+        "............w00..w0X030zz122xwz1ggg1xw121z2z1xw1X1X20...........",
+        "..........xz021..x0x332222Xwx1JVJJJQ1zz21z110yw1xwxz1...........",
+        "........wx122Xx.w0z2322111xQzg55J5VDQgx02X0X00ww..wxxw..........",
+        ".......w02220x.w0yX32zxwDggJg55JL5fzQJgwz2XX01y..yXXX0x.........",
+        ".......x2331w..y0132xwKQf55gf5gg55QwQfJQxx223y0w.w0X221x........",
+        ".......x24410.wz121wKgf555LQLgzf5fzwwH5VQwwz210y...x1321w.......",
+        ".......w14521xyzX2xwwzQJ5fDzzwQ55DwwwKg5fQwwz20zw..x1431w.......",
+        "........yX4531012zwwwDf5Vzmll6QLDwwlllwQ55LDw0Xyw.xXXV31w.......",
+        ".........xz0X1011ywDf55fVD6nn8QDwwmnnlKf1KKwxzXzxx12V42y........",
+        "...........wz1012zywDQQQ5Qwl87wwwww88wD5fzwxy1Xzx134gXyw........",
+        ".............wz02X1ywwKVffxzzzzzzzzzzxff5zxy131zy22zxw..........",
+        "..........wz0.wz0221yxK5gQg1111111111ggQfKzX21zy1Xx.............",
+        ".........yXX0..x0y02XzwDgwx11Qggggg11KwQDzX210zw0z.wx...........",
+        "........y22x..w010002X0wDwzzzz11110zzzwzzX1y0zwww..yJy..........",
+        ".......wX22w..yVf0y001X0.1422Xywwx12231w1101yx000xwg5gw.........",
+        ".......x242yz.w0Qxw010xx131xx1XxwX1xy131y0X0x1112XyxQx..........",
+        ".......w2442Xw.wwwx110x1X0x00wmll6w00xzX1x010ywx13Xxw...........",
+        "........y2V420w.x01111X100XXy6nElwwyXX001111110xy23y............",
+        ".........y013Xxx110y1142222zwno7wwwwz2222411x011yX1w............",
+        "...........wzXz00wwggw1442zxxnolwwwwxy2441wggww000w.ww..........",
+        "...........wwxx0Kjjjjgwzzzw0ynoEwwwmzwyzzwgjjjjx0w.w00..........",
+        "..........z1x.w0xQhhhkxyxwz1z6ooE88m0zwxyxkhhhQx0wxz20..........",
+        ".........w21w..y1wDDDz10yw111xlEE8m011wx00KDDDw1z112Xw..........",
+        ".........w220x.w01yyw110w011z1ywwx00110wz11wxy101242z...........",
+        "..........z23Xy.x011y1XxxX20y2Xzz1XzzX1xx11x110zXg0x............",
+        "..........wz0XXwx012010w021wx02X121xw120wzXz2100Xx..............",
+        ".............w0wx1z120wzX2wx0z122Xy0xwXXzw02Xz0xx...............",
+        "...............wz1zwwwz12Xwy00y02w00zw1210wxxz1yw...............",
+        "...............y1y2100112zw0010wwxX00wx3X11012z1y...............",
+        "..............x0y32111131wz00X1wwy2000w13X11123y0x..............",
+        ".............w1024XXX142ww01121xyz3110x.1411X14201w.............",
+        ".............w1143334X3ww011431zzz34X11ww2X3433411w.............",
+        ".............w101wxw243w03441xz00zz04440wX42yxw101w.............",
+        "..............y01x1zw11z21zzw121022wzz13011xy1x00y..............",
+        "...............wzz011wx22ywzzz22230xzwx2Xww1100zw...............",
+        "................wzzz0zy0z0x11z0110z11xyzzzy00zzw................",
+        ".................wz0001111KPPgDwwKggPz1111100zw.................",
+        "...................wwwxxy0ziiiDz0ziiiz1yxxwxw...................",
+        ".........................z0xxxzzyzxxx00w........................",
+        ".........................wz0000ww0000zw.........................",
+        "...........................www....ww............................",
+        "................................................................",
+        "................................................................"
+      ]),
+      make64([
+        "................................................................",
+        "................................1...............................",
+        "........................00......yXXx............................",
+        "........................00.......x1Xz...........................",
+        "................................wxy220...xz.....................",
+        "..........................0....wyy034Xx.w0gw....................",
+        "......................0xx10.wyxyz0X442x.yJ1w....................",
+        "..................yx...w2Xxw000123452Xx.11w.....................",
+        "................wz0xw.w121yy01244VJ10Xy.0z......yy..............",
+        "...............wygg0xwwX220012455X10zXz.xzw.....zz..............",
+        "............yw.xgVVMzww12321245I52X100xww0Xw.xz...ww............",
+        "............X0.ygV5J0wxzX443XDDDDD01X10x0X2xwgJz..x1y...........",
+        "...............w0MJ0xx00X410z2222221z12122Xxw1gx...10...........",
+        "..............0.x01xxz1X31x2221111122102220xwxxwx0w12x..........",
+        "..............xw0zxx00X201330zyyyyyz12X022zyxxyzzzz22x..........",
+        "............x021www0XX2zX21yyyyyzX20yz2X021001X321X22x..........",
+        "...........x21w..wx11X1X20yyyyyzX210yyyXX1X1244V44421w..........",
+        "..........022x..x0y12113Xyyyyy0X2222Xzy020XX310X5J10w...........",
+        "..........12Xw.wx0z020220yyyzz1222222Xzy12121zy2gzw.............",
+        ".........y23Xxxxyy1XX031yyy12222ywww222zy2z20zyXyx00w...........",
+        ".........xX4410121XX022yyyX2X11yz11zwX2Xz121X1y0y122Xzw.........",
+        "..........1244444322z3zyy122ywz1ggg1xxX20z20X0y1zyw0X2Xw........",
+        "..........w124Xg5V2z232222Xwx1gJJJJ11z021z11X1X0xw..x220w.......",
+        "........0..wz10025g0322111y1zg55JVJDQQx02X01121yxx..w122z.......",
+        ".......00w..wx10210221ywDQgggL5Jf5gyQJQw02XX021zxyzwx1421w......",
+        "......x21xw1.wy1X032ywxQV55gf5gg55QwQfJQxyX22z20y01x0243Xy......",
+        "......y220xxwx0X121wxgH555fQfgzf5fzwxgfVQwwz211X0yy0X45330w.....",
+        "......w123X1yyX01XxwwzQJ5fzDQwQ55zwwwxg5fQwwz21X100245442z......",
+        ".......y1144102z2ywwwDJ5Vx8lwwQLDwwwl8w1f5LDw020112V5g120w......",
+        "........wx14202zXywDf55HJKlnnwQzwww8n8wJ1zKwxz21X25V1zxxw.......",
+        "..........x1202020ywDQDQ5Dw8oEwwwwloEwz5Vzwxz121X4J0ywyw........",
+        "...........xX011120yxwKVVfwyyyzzzyyyyxgVfDxz021XX40x..2y........",
+        ".....w1y...wyyzX112X0yz5QQg1111111111ggQ5z0X210XX1yww...w.......",
+        ".....0VXw.wx01101100X0xQgww111gggg111xwQQzX31021Xzz11yw.0.......",
+        ".....w1yw0X22111002X0X0xQx000z11110000wDzXXx1X110x1zX21w........",
+        ".......wy231yxwx100X0z11w1322XywwxX2231w1102X0z0xwwx142x........",
+        ".......024X0xywwzzz120wy130xx1XxwX1xx131y0221011xxzX431w........",
+        "......wX3VX0xXwwx0121zzX2zx00wmllmw00xz21y012XX001443yw.........",
+        "......x23V42yXxxX2zy1X21zy1Xymno7mwzX1yz0XX1zyXX2210z...........",
+        "......w124540yx10KDjz122222zwEo8wwww02222210gQKz20xw1...........",
+        ".......wy12440yXQhQjkKz232zyxnolwwwwxz232zKgjgiQ10xw0xz.........",
+        ".........wy0X20XKjhiizyyzxx0yno8wwwm0xyzxyzjiijz120yxxx.........",
+        "..........zwx1211KQQQz00x.0106ooE88z00wx00zQgQz0XX23X0w.........",
+        "..........1wwx1X2xzwxX10wx111xlEE8m011xx011ywyyX1z0242z.........",
+        "...........x1zwz2yXxy21xw1X101xwwx001X1wy12zx111100XV41w........",
+        "..........020w0xXy20z2zw022zz21yy1Xyz2Xzxz20021111XVV41w........",
+        ".........zX2x.yxX0022xxz120wx121021xw121zx022X12245V41x.........",
+        "........w12Xxwwy12yxxxz1X1wxzx1221x0xw1210zXJX4V5I421x..........",
+        "........w1231xx0X00X0z1120wz0zxX2w000w12XX245II5421zw...........",
+        ".........xX320020121011X2ww00Xyzzx101y1445W5V42X20xw............",
+        "..........y1X1X113X111131wz1120xxz222J42432XXX311Xxw2w..........",
+        "...........wyX1132233122ww011200145V3200221232231X0ww...........",
+        "............xXz30wwy323xw11X24gVVg32100wx2230ww02z1w............",
+        "...........w011z0wzxz32xz2345V2X10yX322yw23zxzw1y11w............",
+        "...........yXz1XXwXzxxy0JVVg0010011w1X2Xxwwxz1w2X1yz............",
+        "...........x22yy110X10XV420zy022221xyw12Xwy1X011xyX1............",
+        "............0220yX10XVV21zw00z0111z01xy1100zz11xw21w............",
+        ".............wx0wy12V4X100xgggzw.Kgggz111XXXX1x..xw.............",
+        ".................x1441yxz1KhhhQ11zihhD10zyx11w..................",
+        "..................y12210y11KKK0111KKK10wzx.w....................",
+        "..................wxy011101XXX1zy1XXX0x.xw......................",
+        "......................wwxxxyzzx..xyyyw..........................",
+        "................................................................",
+        "................................................................"
+      ]),
+      make64([
+        "................................................................",
+        "................................................................",
+        "................................................................",
+        "................................................................",
+        "...............................x11x.............................",
+        "...............................w02Xx............................",
+        "................................w021w...........................",
+        "..............................wxx121w...........................",
+        ".........................w...yX2222y............................",
+        "................w......wyXx.xX41yxw.............................",
+        "...............xgx....w120w.y24X10zxw..0zw......................",
+        "..............w051x...120wx00zz0zzy01ywz20......................",
+        ".............wg5I5gw..10y01x02222221y00y02x.....................",
+        ".............w0XIX0w..yz1xx22310001221x1z1x....w................",
+        "...............yVy....y1z2330zzzzzzz122z1y....xgy...............",
+        "...............wyw...y10221zzzzzzX20zz2X00x..x151z..............",
+        "....................x00220zzzzzzX2X0zyz2X00w.0JIV1..............",
+        "....................z0131zzzzz0122221yy0210y.wzV0w..............",
+        "...................w10220zzz0012222221zy1200..wzw...............",
+        "...................y103Xzzz1222Xzwww12Xzz2z1w...................",
+        "..............x0z.w1z220zz12211yz11zw12X01X0z..ww...............",
+        ".............wX1z.xXz2zzz122ywz1ggg1xx12002y0wxX21..............",
+        "...........wwwzw.w1x233333Xwx0gJJJg11x02Xz110xx002w.............",
+        "..........x121..w0z1332111x1DQ55gfJDQ1w02X0100w..x..............",
+        ".........xX21w..0zX330ywDQgggf5VV5gzQgQwz21X01y..xyxw...........",
+        ".........z22z..y0032xwxQf55gg5gQf5Qw1fJ1xyX23x1ww1X21w..........",
+        ".........z22zwx0021wwgf555fQfgxQ5fzwwg5JQwwz211z..y121w.........",
+        ".........xX220z012wwwwDJ5fzDDwzL5zwwwKg5fQ.wz200x..022z.........",
+        "..........xX221z2zwwwzf5VzwwwwD5DwwwwwwQ55fDw020y.x133z.........",
+        "...........w021zXxwDH55gJDllllzDww6ll8wfDKwwxz20002332y.........",
+        "............wX1z20ywzDDQ5Qwll6wwwwmllwz5VNwxy12002231z..........",
+        ".............w00121yxwwVVfxyzzzzzzzzyxgffKxy12z1130zw...........",
+        "...........x0zw0013X0y.5gQg1111111111ggQfKy23z1z11www...........",
+        ".........w0X1y.x1zy220wzgww011ggggQ11xwQQ022z1zwzyw11w..........",
+        ".........02Xw..x00Xz220wDw00zy0010zzzzwzzX1z10....15V1..........",
+        "........w220..xgJ0y101X1.1322Xywww12231w1101ywxxw.w11w..........",
+        "........x221x.xgJz.y11xy121xx1Xxw11xx121yzX0w0221y.wx...........",
+        "........x22221wyD.w010y12zx00wwll6w01xyX1y010yz122y.............",
+        "........w03322z..x0101X1zz12zmnn6wwyX1zz1X1010xw12Xw............",
+        ".........w02222xy01y01322220wnolwwwwz2222310y11yy2Xw............",
+        "...........wx12z0ywQgK0333zxxnomwwwwwz2331KgQwy0020.............",
+        ".............x100Qijikwyyxw0xno8www6zwxyzwkijiQ011ww1w..........",
+        "............x1yz0DjhhjK0xwz1z6no8l8m0z.x0xjhhjD0zwx1Xw..........",
+        "...........yX0wx10KDDK11zw111xlEEEm011wz10KDDK01xz220...........",
+        "...........12z..yXxzw1X1w0X1z1ywwx10110w011wyy1z0221w...........",
+        "...........021x.x1zXz12yx120xXXyy1Xxz21yxX1yX01z22yw............",
+        "...........w0X2zx1z2110w021wwy21121xw120wz10201zXx..............",
+        ".............y1zx1z120wzX2wx0y0221x0xwXX0wz21z1xz...............",
+        "...............wz1yw.wz121wy00xz1x01yw121zw.wyX0................",
+        "...............z1z21z0112yw0110.wzX10wy3X10zX2y1z...............",
+        "..............y1z22011131.z1120xxz211zw13111123z1y..............",
+        ".............x1z23111132ww11121xzz2111w.1311113201w.............",
+        ".............y1142333X3ww011320z0z33X11wwXX3322311x.............",
+        ".............y101wyw233w02331xz00zy13320w132yyw111x.............",
+        ".............w011wXzw11y2101w12102X.0012z01xzXx110..............",
+        "..............wy100X1wwX2zwzyz22220xzwy21.w1X010x...............",
+        "................x11zz0z0z1w11z0110z11x1zz0zzz10w................",
+        ".................x11111XX2wPPkDwwzkPPKXX1X1110w.................",
+        "..................wxxwxxy1KiiiQ11Diiiz1xxxxxxw..................",
+        ".........................01yyy0110yyy1z.........................",
+        ".........................wz1110wx0111zw.........................",
+        "............................w.....ww............................",
+        "................................................................",
+        "................................................................"
+      ])
+    ];
+
+    const SPRITES = {
+      soul: SOUL_FLAME_FRAMES,
+      angel: ANGEL_1_FRAMES,
+      archangel: ANGEL_2_FRAMES,
+      cherubim: ANGEL_3_FRAMES,
+      seraphim: ANGEL_4_FRAMES,
+      shadow: SHADOW_FRAMES
+    };
+
+    let audioCtx = null;
+
+    async function ensureAudioReady() {
+      try {
+        if (!audioCtx) {
+          const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+          if (!AudioContextClass) return null;
+          audioCtx = new AudioContextClass();
+        }
+        if (audioCtx.state === "suspended") {
+          await audioCtx.resume();
+        }
+        return audioCtx;
+      } catch (e) {
+        return null;
+      }
+    }
+
+    async function playTone(freq, duration = 0.1, type = "square", delay = 0, gainVal = 0.08) {
+      const ctx = await ensureAudioReady();
+      if (!ctx) return;
+      try {
+        const startTime = ctx.currentTime + delay;
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.type = type;
+        osc.frequency.setValueAtTime(freq, startTime);
+
+        gain.gain.setValueAtTime(0.001, startTime);
+        gain.gain.exponentialRampToValueAtTime(gainVal, startTime + 0.015);
+        gain.gain.exponentialRampToValueAtTime(0.0001, startTime + duration);
+
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+        osc.start(startTime);
+        osc.stop(startTime + duration + 0.02);
+      } catch (e) {}
+    }
+
+    const SFX = {
+      click: () => playTone(587.33, 0.07, "square", 0, 0.06),
+      lightUp: () => {
+        playTone(587.33, 0.09, "triangle", 0, 0.09);
+        playTone(783.99, 0.13, "triangle", 0.09, 0.09);
+      },
+      recover: () => {
+        playTone(523.25, 0.1, "triangle", 0, 0.09);
+        playTone(659.25, 0.1, "triangle", 0.1, 0.09);
+        playTone(783.99, 0.13, "triangle", 0.2, 0.09);
+        playTone(1046.5, 0.2, "triangle", 0.31, 0.09);
+      },
+      shadowEnter: () => {
+        playTone(311.13, 0.14, "sawtooth", 0, 0.07);
+        playTone(233.08, 0.2, "sawtooth", 0.14, 0.07);
+      },
+      heaven: () => {
+        const notes = [523.25, 659.25, 783.99, 1046.5, 1318.5];
+        notes.forEach((n, idx) => playTone(n, 0.15, "triangle", idx * 0.12, 0.09));
+      }
+    };
+
+    function getLocalDateKey(dateObj = new Date()) {
+      const y = dateObj.getFullYear();
+      const m = String(dateObj.getMonth() + 1).padStart(2, "0");
+      const d = String(dateObj.getDate()).padStart(2, "0");
+      return `${y}-${m}-${d}`;
+    }
+
+    function getStartOfLocalDayMs(dateKey) {
+      const [y, m, d] = dateKey.split("-").map(Number);
+      return new Date(y, m - 1, d, 0, 0, 0, 0).getTime();
+    }
+
+    function addDaysToDateKey(dateKey, deltaDays) {
+      const ms = getStartOfLocalDayMs(dateKey) + deltaDays * MS_PER_DAY;
+      return getLocalDateKey(new Date(ms));
+    }
+
+    function createDefaultState() {
+      const now = Date.now();
+      const todayKey = getLocalDateKey(new Date(now));
+      return {
+        playerName: "",
+        startTime: now,
+        startDateKey: todayKey,
+        lastTick: now,
+        light: 15,
+        shadowMeter: 0,
+        isShadow: false,
+        shadowSteps: { pray: 0, bible: 0, good: 0 },
+        counts: { pray: 0, bible: 0, good: 0 },
+        dailyLogs: {
+          [todayKey]: { pray: 0, bible: 0, good: 0 }
+        },
+        evaluatedDays: [],
+        journals: [],
+        reachedLv4ByDay30: false,
+        lv4ReachedDay: null,
+        heavenTriggered: false
+      };
+    }
+
+    let state = loadState();
+    let animFrame = 0;
+    let moveStep = 0;
+    let pendingActionType = null;
+
+    function loadState() {
+      try {
+        const raw = localStorage.getItem(STORAGE_KEY);
+        if (!raw) return createDefaultState();
+        const parsed = JSON.parse(raw);
+        const def = createDefaultState();
+        const merged = {
+          ...def,
+          ...parsed,
+          light: Math.min(MAX_LIGHT, Math.max(0, Number(parsed.light ?? def.light))),
+          dailyLogs: { ...(parsed.dailyLogs || {}) },
+          evaluatedDays: Array.isArray(parsed.evaluatedDays) ? [...parsed.evaluatedDays] : []
+        };
+        const todayKey = getLocalDateKey();
+        if (!merged.dailyLogs[todayKey]) {
+          merged.dailyLogs[todayKey] = { pray: 0, bible: 0, good: 0 };
+        }
+        return merged;
+      } catch (e) {
+        return createDefaultState();
+      }
+    }
+
+    function saveState() {
+      try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+      } catch (e) {}
+    }
+
+    function getTodayActivitiesCount() {
+      const todayKey = getLocalDateKey();
+      const dayLog = state.dailyLogs[todayKey] || { pray: 0, bible: 0, good: 0 };
+      return (dayLog.pray || 0) + (dayLog.bible || 0) + (dayLog.good || 0);
+    }
+
+    function showGoingToHeavenBanner(day) {
+      return !state.isShadow && day >= TARGET_DAYS;
+    }
+
+    function openWelcomeModalIfNeeded() {
+      if (!state.playerName || !state.playerName.trim()) {
+        const inputEl = document.getElementById("playerNameInput");
+        inputEl.value = "";
+        document.getElementById("welcomeModal").classList.add("open");
+        setTimeout(() => inputEl.focus(), 40);
+      }
+    }
+
+    function savePlayerName() {
+      const inputEl = document.getElementById("playerNameInput");
+      const entered = inputEl.value.trim();
+      state.playerName = entered || "Sahabat Terang";
+      SFX.lightUp();
+      document.getElementById("welcomeModal").classList.remove("open");
+      saveState();
+      render();
+    }
+
+    function getDaytimeInfo() {
+      const hour = new Date().getHours();
+      const isNight = hour >= 18 || hour < 5;
+      return {
+        isNight,
+        badgeText: isNight ? "🌙 MALAM" : "☀️ SIANG"
+      };
+    }
+
+    function getCurrentDay() {
+      const startDayMs = getStartOfLocalDayMs(state.startDateKey || getLocalDateKey(new Date(state.startTime)));
+      const todayDayMs = getStartOfLocalDayMs(getLocalDateKey());
+      const elapsedDays = Math.max(0, Math.floor((todayDayMs - startDayMs) / MS_PER_DAY));
+      return Math.min(TARGET_DAYS, 1 + elapsedDays);
+    }
+
+    function isCurrentlyLv4() {
+      return !state.isShadow && state.light >= LV4_MIN_LIGHT;
+    }
+
+    function evaluateLv4Journey(day) {
+      const lv4Now = isCurrentlyLv4();
+
+      if (state.reachedLv4ByDay30) {
+        if (!lv4Now) {
+          state.reachedLv4ByDay30 = false;
+          state.lv4ReachedDay = null;
+          state.heavenTriggered = false;
+        }
+      } else if (day <= LV4_DEADLINE_DAY && lv4Now) {
+        state.reachedLv4ByDay30 = true;
+        state.lv4ReachedDay = day;
+      }
+
+      const canAscendToHeaven = day >= TARGET_DAYS && state.reachedLv4ByDay30 && lv4Now;
+      if (canAscendToHeaven && !state.heavenTriggered) {
+        state.heavenTriggered = true;
+        SFX.heaven();
+      }
+
+      const missedDeadline = !state.reachedLv4ByDay30 && day > LV4_DEADLINE_DAY;
+      return { lv4Now, canAscendToHeaven, missedDeadline };
+    }
+
+    function refreshShadowFlag() {
+      const wasShadow = state.isShadow;
+      if (state.shadowMeter >= 70 && !state.isShadow) {
+        state.isShadow = true;
+        state.shadowSteps = { pray: 0, bible: 0, good: 0 };
+        state.reachedLv4ByDay30 = false;
+        state.lv4ReachedDay = null;
+        state.heavenTriggered = false;
+        if (!wasShadow) SFX.shadowEnter();
+      }
+    }
+
+    function evaluatePastDaysPenalty() {
+      const todayKey = getLocalDateKey();
+      if (!state.dailyLogs[todayKey]) {
+        state.dailyLogs[todayKey] = { pray: 0, bible: 0, good: 0 };
+      }
+
+      let cursorKey = state.startDateKey || getLocalDateKey(new Date(state.startTime));
+      let totalMissing = 0;
+      let changed = false;
+
+      while (cursorKey < todayKey) {
+        if (!state.evaluatedDays.includes(cursorKey)) {
+          const dayLog = state.dailyLogs[cursorKey] || { pray: 0, bible: 0, good: 0 };
+          let missingOnDay = 0;
+          if ((dayLog.pray || 0) < 1) missingOnDay += 1;
+          if ((dayLog.bible || 0) < 1) missingOnDay += 1;
+          if ((dayLog.good || 0) < 1) missingOnDay += 1;
+
+          state.evaluatedDays.push(cursorKey);
+          totalMissing += missingOnDay;
+          changed = true;
+        }
+        cursorKey = addDaysToDateKey(cursorKey, 1);
+      }
+
+      if (totalMissing > 0) {
+        const pointPenalty = totalMissing * MISSED_CATEGORY_PENALTY_POINTS;
+        state.light = Math.max(0, Math.round((state.light - pointPenalty) * 10) / 10);
+        state.shadowMeter = Math.min(100, Math.round((state.shadowMeter + totalMissing * 6) * 10) / 10);
+        refreshShadowFlag();
+        if (!isCurrentlyLv4()) {
+          state.reachedLv4ByDay30 = false;
+          state.lv4ReachedDay = null;
+          state.heavenTriggered = false;
+        }
+      }
+
+      if (changed) {
+        saveState();
+      }
+    }
+
+    function syncRealTime() {
+      evaluatePastDaysPenalty();
+      const now = Date.now();
+      const elapsedMs = Math.max(0, now - state.lastTick);
+      const elapsedHours = elapsedMs / (1000 * 60 * 60);
+
+      if (elapsedHours > 0.05) {
+        const shadowGain = Math.min(35, elapsedHours * 1.2);
+        state.shadowMeter = Math.min(100, Math.round((state.shadowMeter + shadowGain) * 10) / 10);
+        refreshShadowFlag();
+        state.lastTick = now;
+        saveState();
+      }
+    }
+
+    function evaluateCharacter() {
+      const day = getCurrentDay();
+      const journey = evaluateLv4Journey(day);
+      const daytime = getDaytimeInfo();
+
+      if (state.isShadow) {
+        return {
+          spriteKey: "shadow",
+          isHeaven: false,
+          day,
+          title: "SHADOW",
+          screenClass: "is-shadow"
+        };
+      }
+
+      if (journey.canAscendToHeaven || day >= TARGET_DAYS) {
+        return {
+          spriteKey: "seraphim",
+          isHeaven: true,
+          day,
+          title: "SERAPHIM",
+          screenClass: "is-heaven"
+        };
+      }
+
+      const baseClass = daytime.isNight ? "is-night" : "";
+
+      if (state.light < 75) {
+        return {
+          spriteKey: "soul",
+          isHeaven: false,
+          day,
+          title: "SOUL",
+          screenClass: baseClass
+        };
+      } else if (state.light < 150) {
+        return {
+          spriteKey: "angel",
+          isHeaven: false,
+          day,
+          title: "ANGEL",
+          screenClass: baseClass
+        };
+      } else if (state.light < 225) {
+        return {
+          spriteKey: "archangel",
+          isHeaven: false,
+          day,
+          title: "ARCHANGEL",
+          screenClass: baseClass
+        };
+      } else if (state.light < LV4_MIN_LIGHT) {
+        return {
+          spriteKey: "cherubim",
+          isHeaven: false,
+          day,
+          title: "CHERUBIM",
+          screenClass: baseClass
+        };
+      } else {
+        return {
+          spriteKey: "seraphim",
+          isHeaven: false,
+          day,
+          title: "SERAPHIM",
+          screenClass: baseClass
+        };
+      }
+    }
+
+    function drawEmbers(ctx, baseX, baseY, stepIdx) {
+      const emberColors = ["#fef9c3", "#facc15", "#f59e0b", "#ea580c"];
+      const sparks = [
+        { dx: 18, dy: -2 - (stepIdx % 5) * 2, c: emberColors[stepIdx % 4] },
+        { dx: 36, dy: -1 - ((stepIdx + 2) % 6) * 2, c: emberColors[(stepIdx + 1) % 4] },
+        { dx: 28, dy: -4 - ((stepIdx + 4) % 5) * 2, c: emberColors[(stepIdx + 2) % 4] }
+      ];
+      sparks.forEach((sp) => {
+        const px = baseX + sp.dx + Math.round(Math.sin(stepIdx + sp.dx) * 2);
+        const py = baseY + sp.dy;
+        if (px >= 0 && px < CANVAS_SIZE && py >= 0 && py < CANVAS_SIZE) {
+          ctx.fillStyle = sp.c;
+          ctx.fillRect(px, py, 1, 1);
+        }
+      });
+    }
+
+    function drawStaticBannerFrame(ctx, bannerRows, startY, colors) {
+      const frame = bannerRows[0];
+      const rowWidth = frame[0].length;
+      const startX = Math.max(0, Math.floor((CANVAS_SIZE - rowWidth) / 2));
+
+      for (let y = 0; y < frame.length; y++) {
+        const row = frame[y];
+        const py = startY + y;
+        if (py < 0 || py >= CANVAS_SIZE) continue;
+        for (let x = 0; x < row.length; x++) {
+          if (row[x] !== ".") {
+            const px = startX + x;
+            if (px >= 0 && px < CANVAS_SIZE) {
+              ctx.fillStyle = colors[Math.floor(x / 8) % colors.length];
+              ctx.fillRect(px, py, 1, 1);
+            }
+          }
+        }
+      }
+    }
+
+    function drawPixelSprite(info, frameIdx, stepIdx) {
+      const canvas = document.getElementById("petCanvas");
+      const ctx = canvas.getContext("2d");
+      ctx.clearRect(0, 0, CANVAS_SIZE, CANVAS_SIZE);
+
+      const hasGoingToHeaven = showGoingToHeavenBanner(info.day);
+      const topPad = hasGoingToHeaven ? 7 : 0;
+
+      if (hasGoingToHeaven) {
+        drawStaticBannerFrame(ctx, GOING_TO_HEAVEN_FRAMES, 1, ["#b45309", "#d97706", "#1d4ed8"]);
+      }
+
+      const spriteKey = info.spriteKey;
+      const spriteFrames = SPRITES[spriteKey] || SPRITES.seraphim;
+      const grid = spriteFrames[frameIdx % spriteFrames.length];
+
+      const period = 28;
+      const pos = stepIdx % period;
+      const half = period / 2;
+
+      let xOffset;
+      let facingLeft = false;
+
+      if (info.isHeaven) {
+        xOffset = Math.round(Math.sin((stepIdx / 5) * Math.PI) * 2);
+      } else if (pos < half) {
+        xOffset = -2 + Math.round((pos / half) * 4);
+        facingLeft = false;
+      } else {
+        xOffset = 2 - Math.round(((pos - half) / half) * 4);
+        facingLeft = true;
+      }
+
+      let bobY;
+      if (info.isHeaven) {
+        bobY = Math.max(topPad - 1, topPad + 1 - Math.floor((stepIdx % 20) / 5));
+      } else if (spriteKey === "soul") {
+        bobY = topPad + Math.round(Math.sin(stepIdx * 0.9) * 1.0);
+      } else {
+        bobY = topPad + (frameIdx % 3 === 1 ? 1 : 0);
+      }
+
+      if (spriteKey === "soul") {
+        drawEmbers(ctx, xOffset, bobY, stepIdx);
+      }
+
+      for (let y = 0; y < 64; y++) {
+        const row = grid[y];
+        const drawY = y + bobY;
+        if (drawY < 0 || drawY >= CANVAS_SIZE) continue;
+
+        const flameLean = spriteKey === "soul" && y < 24
+          ? Math.round(Math.sin(stepIdx * 0.85 + (24 - y) * 0.2) * 1.2)
+          : 0;
+
+        for (let x = 0; x < 64; x++) {
+          const srcX = facingLeft ? (63 - x) : x;
+          const ch = row[srcX];
+          const color = PALETTE[ch];
+          if (color) {
+            const drawX = x + xOffset + flameLean;
+            if (drawX >= 0 && drawX < CANVAS_SIZE) {
+              ctx.fillStyle = color;
+              ctx.fillRect(drawX, drawY, 1, 1);
+            }
+          }
+        }
+      }
+    }
+
+    function openReflectionModal(type) {
+      SFX.click();
+      pendingActionType = type;
+      const titleEl = document.getElementById("refModalTitle");
+      const hintEl = document.getElementById("refModalHint");
+      const inputEl = document.getElementById("refInput");
+
+      if (type === "pray") {
+        titleEl.textContent = "PRAY";
+        hintEl.textContent = "Catat doa atau misa hari ini.";
+        inputEl.placeholder = "Contoh: Misa Harian, Rosario, Novena, Doa Malam, Doa Angelus, dll.";
+      } else if (type === "bible") {
+        titleEl.textContent = "READ";
+        hintEl.textContent = "Catat perikop atau ayat Kitab Suci yang dibaca hari ini.";
+        inputEl.placeholder = "Contoh: Yohanes 15:1-8...";
+      } else {
+        titleEl.textContent = "ACT";
+        hintEl.textContent = "Refleksi ungkapan syukur dan perbuatan baik hari ini.";
+        inputEl.placeholder = "Ya Tuhan terima kasih karena hari ini...";
+      }
+
+      inputEl.value = "";
+      document.getElementById("reflectionModal").classList.add("open");
+      setTimeout(() => inputEl.focus(), 40);
+    }
+
+    function closeReflectionModal() {
+      SFX.click();
+      pendingActionType = null;
+      document.getElementById("reflectionModal").classList.remove("open");
+    }
+
+    function commitReflection(skipNote) {
+      if (!pendingActionType) return;
+      const type = pendingActionType;
+      const rawNote = skipNote ? "" : document.getElementById("refInput").value.trim();
+
+      document.getElementById("reflectionModal").classList.remove("open");
+      pendingActionType = null;
+
+      applyAction(type, rawNote);
+    }
+
+    function applyAction(type, noteText) {
+      syncRealTime();
+      const todayKey = getLocalDateKey();
+      if (!state.dailyLogs[todayKey]) {
+        state.dailyLogs[todayKey] = { pray: 0, bible: 0, good: 0 };
+      }
+
+      state.counts[type] = (state.counts[type] || 0) + 1;
+      state.dailyLogs[todayKey][type] = (state.dailyLogs[todayKey][type] || 0) + 1;
+      state.lastTick = Date.now();
+
+      const labelMap = {
+        pray: "PRAY",
+        bible: "READ",
+        good: "ACT"
+      };
+
+      const defaultNoteMap = {
+        pray: "Doa atau misa hari ini dicatat.",
+        bible: "Bacaan Kitab Suci direnungkan.",
+        good: "Refleksi ungkapan syukur dan perbuatan baik hari ini."
+      };
+
+      state.journals.unshift({
+        id: Date.now() + "-" + Math.random().toString(36).slice(2, 6),
+        day: getCurrentDay(),
+        type,
+        category: labelMap[type],
+        note: noteText || defaultNoteMap[type],
+        timeLabel: new Date().toLocaleTimeString("id-ID", { hour: "2-digit", minute: "2-digit" })
+      });
+
+      if (state.journals.length > 150) {
+        state.journals = state.journals.slice(0, 150);
+      }
+
+      if (state.isShadow) {
+        state.shadowSteps[type] = (state.shadowSteps[type] || 0) + 1;
+        state.shadowMeter = Math.max(0, Math.round((state.shadowMeter - 12) * 10) / 10);
+
+        const donePray = state.shadowSteps.pray >= 1;
+        const doneBible = state.shadowSteps.bible >= 1;
+        const doneGood = state.shadowSteps.good >= 1;
+
+        if (donePray && doneBible && doneGood) {
+          state.isShadow = false;
+          state.shadowMeter = Math.min(state.shadowMeter, 40);
+          state.light = Math.min(MAX_LIGHT, Math.max(75, state.light + 24));
+          state.shadowSteps = { pray: 0, bible: 0, good: 0 };
+          SFX.recover();
+        } else {
+          SFX.click();
+        }
+      } else {
+        state.light = Math.min(MAX_LIGHT, Math.round((state.light + ACTION_GAIN_POINTS) * 10) / 10);
+        state.shadowMeter = Math.max(0, Math.round((state.shadowMeter - 12) * 10) / 10);
+
+        const day = getCurrentDay();
+        const journey = evaluateLv4Journey(day);
+        if (journey.canAscendToHeaven) {
+          SFX.heaven();
+        } else {
+          SFX.lightUp();
+        }
+      }
+
+      saveState();
+      render();
+    }
+
+    function openJournalModal() {
+      SFX.click();
+      const listEl = document.getElementById("journalList");
+      if (!state.journals.length) {
+        listEl.innerHTML = `<div class="journal-entry"><div class="journal-text">Belum ada catatan. Tekan PRAY, READ, atau ACT.</div></div>`;
+      } else {
+        listEl.innerHTML = state.journals
+          .map((item) => {
+            const safeNote = item.note
+              .replace(/&/g, "&amp;")
+              .replace(/</g, "&lt;")
+              .replace(/>/g, "&gt;");
+            return `
+              <div class="journal-entry">
+                <div class="journal-meta">
+                  <span>${item.category} • DAY ${item.day}</span>
+                  <span>${item.timeLabel}</span>
+                </div>
+                <div class="journal-text">${safeNote}</div>
+              </div>
+            `;
+          })
+          .join("");
+      }
+      document.getElementById("journalModal").classList.add("open");
+    }
+
+    function closeJournalModal() {
+      SFX.click();
+      document.getElementById("journalModal").classList.remove("open");
+    }
+
+    function openAboutModal() {
+      SFX.click();
+      document.getElementById("aboutModal").classList.add("open");
+    }
+
+    function closeAboutModal() {
+      SFX.click();
+      document.getElementById("aboutModal").classList.remove("open");
+    }
+
+    function resetGame() {
+      SFX.click();
+      state = createDefaultState();
+      saveState();
+      render();
+      openWelcomeModalIfNeeded();
+    }
+
+    function render() {
+      syncRealTime();
+      const day = getCurrentDay();
+      const daytime = getDaytimeInfo();
+      const info = evaluateCharacter();
+      const todayCount = getTodayActivitiesCount();
+      saveState();
+
+      const displayName = (state.playerName && state.playerName.trim())
+        ? state.playerName.trim().toUpperCase()
+        : "ANAK TERANG";
+      document.getElementById("playerNameLabel").textContent = `ANAK TERANG • ${displayName}`;
+      document.getElementById("daytimeBadge").textContent = daytime.badgeText;
+      document.getElementById("journalTotal").textContent = String(state.journals.length);
+
+      const lcdScreen = document.getElementById("lcdScreen");
+      lcdScreen.className = `lcd-screen ${info.screenClass}`.trim();
+
+      drawPixelSprite(info, animFrame, moveStep);
+
+      document.getElementById("stageTitle").textContent = info.title;
+
+      const encourEl = document.getElementById("encouragementBanner");
+      if (todayCount === 0) {
+        const msgIdx = Math.floor(moveStep / 16) % ENCOURAGEMENT_MESSAGES.length;
+        encourEl.textContent = ENCOURAGEMENT_MESSAGES[msgIdx];
+        encourEl.classList.add("visible");
+      } else {
+        encourEl.classList.remove("visible");
+      }
+
+      document.getElementById("recPray").textContent = `${Math.min(1, state.shadowSteps.pray)}/1`;
+      document.getElementById("recBible").textContent = `${Math.min(1, state.shadowSteps.bible)}/1`;
+      document.getElementById("recGood").textContent = `${Math.min(1, state.shadowSteps.good)}/1`;
+
+      const lightVal = Math.round(state.light);
+      const lightPct = Math.min(100, Math.round((lightVal / MAX_LIGHT) * 100));
+      document.getElementById("lightText").textContent = `${lightVal}/${MAX_LIGHT}`;
+      document.getElementById("lightBar").style.width = `${lightPct}%`;
+
+      const dayBarPct = Math.min(100, Math.round((day / TARGET_DAYS) * 100));
+      document.getElementById("dayText").textContent = `${day}/${TARGET_DAYS}`;
+      document.getElementById("dayBar").style.width = `${dayBarPct}%`;
+
+      const shadowPct = Math.round(state.shadowMeter);
+      document.getElementById("shadowText").textContent = `${shadowPct}%`;
+      document.getElementById("shadowBar").style.width = `${shadowPct}%`;
+
+      document.getElementById("prayCount").textContent = `${state.counts.pray}x`;
+      document.getElementById("bibleCount").textContent = `${state.counts.bible}x`;
+      document.getElementById("goodCount").textContent = `${state.counts.good}x`;
+    }
+
+    setInterval(() => {
+      moveStep += 1;
+      if (moveStep % 2 === 0) {
+        animFrame += 1;
+      }
+      const info = evaluateCharacter();
+      drawPixelSprite(info, animFrame, moveStep);
+    }, 180);
+
+    setInterval(() => {
+      render();
+    }, 30000);
+
+    render();
+    openWelcomeModalIfNeeded();
+  </script>
+<script>
+  if ("serviceWorker" in navigator) {
+    window.addEventListener("load", () => {
+      navigator.serviceWorker.register("./sw.js").catch(() => {});
+    });
+  }
+</script>
+</body>
+</html>
